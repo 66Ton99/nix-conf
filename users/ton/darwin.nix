@@ -19,4 +19,12 @@
 
   # Required for some settings like homebrew to know what user to apply to.
   system.primaryUser = "ton";
+  
+  # sudo with finger print
+  security.pam.services.sudo_local = {
+  	enable = true;
+   	reattach = true;
+   	touchIdAuth = true;
+   	watchIdAuth = true;
+  };
 }
