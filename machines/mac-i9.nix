@@ -67,15 +67,6 @@
     # End Nix
     '';
 
-  programs.fish.enable = true;
-  programs.fish.shellInit = ''
-    # Nix
-    if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish'
-      source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish'
-    end
-    # End Nix
-    '';
-
   environment.shells = with pkgs; [ bashInteractive zsh fish ];
   environment.systemPackages = with pkgs; [
     cachix
