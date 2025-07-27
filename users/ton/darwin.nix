@@ -1,6 +1,10 @@
 { inputs, pkgs, config, ... }:
 
 {
+  environment.systemPackages = [
+    pkgs.colima
+  ];
+  
   imports = [
     ../../pkgs/php84.nix
   ];
@@ -46,8 +50,4 @@
       "com.apple.keyboard.fnState" = true;
     };
   };
-
-  environment.systemPackages = [
-    pkgs.colima
-  ];
 }
