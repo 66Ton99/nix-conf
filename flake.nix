@@ -42,12 +42,12 @@
     # I think technically you're not supposed to override the nixpkgs
     # used by neovim but recently I had failures if I didn't pin to my
     # own. We can always try to remove that anytime.
-    neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay";
-    };
+#    neovim-nightly-overlay = {
+#      url = "github:nix-community/neovim-nightly-overlay";
+#    };
 
     # Other packages
-    jujutsu.url = "github:martinvonz/jj";
+#    jujutsu.url = "github:martinvonz/jj";
 #    zig.url = "github:ton/zig-overlay";
 
     # Non-flakes
