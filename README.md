@@ -4,9 +4,14 @@ This is clone of https://github.com/mitchellh/nixos-config all basic documentati
 
 I made some changes for my cases.
 
-## Run on MacOS
+## Install Nix
 ```shell
-nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.mac-i9.system"
+curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate
+```
+
+## Install nix-darwin
+```shell
+sudo nix run nix-darwin -- switch --flake /Volumes/SRC/nix-conf#mac-m4 --show-trace
 ```
 
 
