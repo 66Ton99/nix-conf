@@ -18,7 +18,7 @@ UNAME := $(shell uname)
 
 switch:
 ifeq ($(UNAME), Darwin)
-	sudo NIXPKGS_ALLOW_UNFREE=1 darwin-rebuild switch --impure --flake "$$(pwd)#${NIXNAME}"
+	sudo NIXPKGS_ALLOW_UNFREE=1 darwin-rebuild switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
 else
 	sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --impure --flake ".#${NIXNAME}"
 endif

@@ -1,6 +1,10 @@
-{ inputs, pkgs, ... }:
+{ inputs, pkgs, config, ... }:
 
 {
+  imports = [
+    ../../pkgs/php84.nix
+  ];
+
 #  homebrew = {
 #    enable = true;
 #    casks  = [
@@ -27,4 +31,23 @@
    	touchIdAuth = true;
    	watchIdAuth = true;
   };
+  # set some OSX preferences that I always end up hunting down and changing.
+  system.defaults = {
+    # a finder that tells me what I want to know and lets me work
+    finder = {
+      AppleShowAllExtensions = true;
+      ShowPathbar = true;
+      FXEnableExtensionChangeWarning = false;
+    };
+    
+    # Tab between form controls and F-row that behaves as F1-F12
+    NSGlobalDomain = {
+      AppleKeyboardUIMode = 3;
+      "com.apple.keyboard.fnState" = true;
+    };
+  };
+
+  environment.systemPackages = [
+    pkgs.colima
+  ];
 }

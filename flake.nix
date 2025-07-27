@@ -62,7 +62,7 @@
   outputs = { self, nixpkgs, home-manager, darwin, ... }@inputs: let
     # Overlays is the list of overlays we want to apply from flake inputs.
     overlays = [
-      inputs.jujutsu.overlays.default
+#      inputs.jujutsu.overlays.default
 #      inputs.zig.overlays.default
 
       (final: prev: rec {

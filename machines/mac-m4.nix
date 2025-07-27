@@ -67,7 +67,7 @@
     # End Nix
     '';
 
-  environment.shells = with pkgs; [ bashInteractive zsh fish ];
+  environment.shells = with pkgs; [ zsh ];
   environment.systemPackages = with pkgs; [
     cachix
   ];
