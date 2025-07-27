@@ -59,7 +59,7 @@ in {
     LANG = "en_US.UTF-8";
     LC_CTYPE = "en_US.UTF-8";
     LC_ALL = "en_US.UTF-8";
-    EDITOR = "nvim";
+#    EDITOR = "nvim";
     PAGER = "less -FirSwX";
     MANPAGER = "${manpager}/bin/manpager";
 
@@ -98,6 +98,16 @@ in {
 #    initExtra = builtins.readFile ./bashrc;
     shellAliases = shellAliases;
   };
+  
+  programs.zsh = {
+    enable = true;
+    oh-my-zsh = {
+      enable = true;
+      plugins = [ "git" "docker" ];
+    };
+  };
+  
+#  programs.chromium.enable = true;
 
 #  programs.direnv= {
 #    enable = true;
@@ -215,9 +225,9 @@ in {
 #    enable = true;
 #  };
 
-  programs.oh-my-posh = {
-    enable = true;
-  };
+#  programs.oh-my-posh = {
+#    enable = true;
+#  };
 
 #  services.gpg-agent = {
 #    enable = isLinux;
