@@ -3,7 +3,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  sources = import ../../nix/sources.nix;
+#  sources = import ../../nix/sources.nix;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 
@@ -104,6 +104,7 @@ in {
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" "docker" ];
+      theme = "robbyrussell";
     };
   };
   
