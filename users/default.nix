@@ -11,4 +11,7 @@
     dina-font
     proggyfonts
   ];
+  environment.systemPackages = with pkgs; [
+    docker
+  ];
 }

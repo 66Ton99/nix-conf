@@ -1,8 +1,8 @@
 { inputs, pkgs, config, ... }:
 
 {
-  environment.systemPackages = [
-    pkgs.colima
+  environment.systemPackages = with pkgs; [
+    colima
   ];
   
   imports = [
