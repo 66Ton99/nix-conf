@@ -1,7 +1,7 @@
-# PHP 8.4
+# PHP 8.3
 { pkgs, ... }: {
   environment.systemPackages = [
-    (pkgs.php84.buildEnv {
+    (pkgs.php83.buildEnv {
       extensions = ({ enabled, all }: enabled ++ (with all; [
         xdebug
         apcu

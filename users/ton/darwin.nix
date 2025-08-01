@@ -6,7 +6,7 @@
   ];
   
   imports = [
-    ../../pkgs/php84.nix
+    ../../pkgs/php83.nix
   ];
 
 #  homebrew = {

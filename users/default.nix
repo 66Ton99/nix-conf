@@ -11,7 +11,10 @@
     dina-font
     proggyfonts
   ];
+
   environment.systemPackages = with pkgs; [
     docker
+    docker-credential-helpers
+    git-filter-repo
   ];
 }
