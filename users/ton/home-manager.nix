@@ -158,6 +158,7 @@ in {
       github.user = "66Ton99";
       push.default = "tracking";
       init.defaultBranch = "main";
+      pull.rebase = true;
     };
   };
 

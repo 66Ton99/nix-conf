@@ -25,7 +25,7 @@ endif
 
 setup:
 ifeq ($(UNAME), Darwin)
-	sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake "$$(pwd)#${NIXNAME}" --show-trace
+	sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
 endif
 
 install:

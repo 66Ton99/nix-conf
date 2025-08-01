@@ -2,6 +2,8 @@
 
 {
   environment.systemPackages = with pkgs; [
+#    xcode-install
+#    darwin.xcode
     colima
   ];
   

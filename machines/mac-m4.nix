@@ -1,5 +1,5 @@
 { config, pkgs, ... }: {
-  environment.systemPackages = with pkgs; [
-    cachix
+  imports = [
+    ../pkgs/dev.nix
   ];
 }
