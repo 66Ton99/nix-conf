@@ -23,13 +23,17 @@ else
 	sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --impure --flake ".#${NIXNAME}"
 endif
 
+install:
+	curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate
+
 setup:
 ifeq ($(UNAME), Darwin)
 	sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
 endif
 
-install:
-	curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate
+uninstall:
+	sudo darwin-uninstaller && \
+	/nix/nix-installer uninstall
 
 test:
 ifeq ($(UNAME), Darwin)

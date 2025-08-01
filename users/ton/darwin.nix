@@ -26,6 +26,7 @@
     home = "/Users/ton";
     shell = pkgs.zsh;
   };
+  environment.shells = with pkgs; [ zsh ];
   
   # zsh is the default shell on Mac and we want to make sure that we're
   # configuring the rc correctly with nix-darwin paths.
@@ -37,8 +38,6 @@
     fi
     # End Nix
     '';
-
-  environment.shells = with pkgs; [ zsh ];
 
   # Required for some settings like homebrew to know what user to apply to.
   system.primaryUser = "ton";
