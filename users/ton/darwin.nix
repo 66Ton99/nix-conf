@@ -6,6 +6,7 @@
 #    darwin.xcode
     colima
     oci-cli
+    kubectl
   ];
   
   imports = [
