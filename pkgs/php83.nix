@@ -5,6 +5,8 @@
       extensions = ({ enabled, all }: enabled ++ (with all; [
         xdebug
         apcu
+        oci8
+        xsl
       ]));
       extraConfig = ''
         xdebug.mode=debug
