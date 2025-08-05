@@ -10,6 +10,7 @@
       ]));
       extraConfig = ''
         xdebug.mode=debug
+        apc.enable_cli=1
       '';
     })
   ];
