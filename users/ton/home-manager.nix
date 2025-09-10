@@ -13,6 +13,7 @@ let
     # that I'm just going to keep it consistent.
     pbcopy = "xclip";
     pbpaste = "xclip -o";
+    nc = "ncat";
   } else {});
 
   # For our MANPAGER env var

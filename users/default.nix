@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, home, ... }:
 {
   fonts.packages = with pkgs; [
     noto-fonts
@@ -16,6 +16,7 @@
     docker
     docker-credential-helpers
     git-filter-repo
-    netcat-gnu
+    nmap
   ];
+  
 }
