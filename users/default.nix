@@ -16,6 +16,6 @@
     docker
     docker-credential-helpers
     git-filter-repo
-    netcat
+    netcat-gnu
   ];
 }
