@@ -17,6 +17,7 @@
     docker-credential-helpers
     git-filter-repo
     nmap
+    openconnect
   ];
   
 }

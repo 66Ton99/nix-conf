@@ -8,6 +8,7 @@
     docker-buildx
     oci-cli
     kubectl
+    xdg-utils
   ];
   
   imports = [
