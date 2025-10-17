@@ -16,6 +16,7 @@
     docker
     docker-credential-helpers
     git-filter-repo
+    git-lfs
     nmap
     openconnect
   ];
