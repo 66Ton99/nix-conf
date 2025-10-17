@@ -15,10 +15,24 @@
   environment.systemPackages = with pkgs; [
     docker
     docker-credential-helpers
+    kubernetes-helm
+    docker-buildx
+    kubectl
+    oci-cli
     git-filter-repo
     git-lfs
     nmap
     openconnect
+    xdg-utils
+    automake
+    autoconf
+    pkg-config
+    pcsclite
+    om4
+    libtool
+    nls
+    gettext
+    gnutls
   ];
   
 }

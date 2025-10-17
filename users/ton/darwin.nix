@@ -5,10 +5,6 @@
 #    xcode-install
 #    darwin.xcode
     colima
-    docker-buildx
-    oci-cli
-    kubectl
-    xdg-utils
   ];
   
   imports = [
