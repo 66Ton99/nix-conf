@@ -5,6 +5,7 @@
 #    xcode-install
 #    darwin.xcode
     colima
+    gnused
   ];
   
   imports = [

@@ -18,6 +18,7 @@
     kubernetes-helm
     docker-buildx
     kubectl
+    kind
     oci-cli
     git-filter-repo
     git-lfs
