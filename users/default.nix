@@ -13,6 +13,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    wget
     docker
     docker-credential-helpers
     kubernetes-helm
@@ -34,6 +35,12 @@
     nls
     gettext
     gnutls
+    xz
+    pyenv
+    just
+    poetry
+    openssl
   ];
+  
   
 }

@@ -45,6 +45,10 @@
     if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
       . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
     fi
+    # pyenv:
+    export PYENV_ROOT="$HOME/.pyenv"
+    [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init - zsh)"
     # End Nix
     '';
 
@@ -74,8 +78,8 @@
     };
   };
   
-  # Set in Sept 2024 as part of the macOS Sequoia release.
-  system.stateVersion = 5;
+  # part of the macOS Tahoe release.
+  system.stateVersion = 6;
 
   # This makes it work with the Determinate Nix installer
   ids.gids.nixbld = 30000;
