@@ -6,5 +6,6 @@
     sonar-scanner-cli
     nodejs_20
     ant
+    go
   ];
 }
