@@ -25,21 +25,6 @@
     git-lfs
     nmap
     openconnect
-    xdg-utils
-    automake
-    autoconf
-    pkg-config
-    pcsclite
-    om4
-    libtool
-    nls
-    gettext
-    gnutls
-    xz
-    pyenv
-    just
-    poetry
-    openssl
   ];
   
   
