@@ -50,7 +50,7 @@
     [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init - zsh)"
     # End Nix
-    '';
+  '';
 
   # Required for some settings like homebrew to know what user to apply to.
   system.primaryUser = "ton";

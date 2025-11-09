@@ -64,8 +64,11 @@ in {
     PAGER = "less -FirSwX";
     MANPAGER = "${manpager}/bin/manpager";
 
-    AMP_API_KEY = "op://Private/Amp_API/credential";
-    OPENAI_API_KEY = "op://Private/OpenAPI_Personal/credential";
+#    AMP_API_KEY = "op://Private/Amp_API/credential";
+#    OPENAI_API_KEY = "op://Private/OpenAPI_Personal/credential";
+
+  	LM_STUDIO_API_KEY = "dummy-api-key";
+    LM_STUDIO_API_BASE = "http://localhost:1234/v1";
   } // (if isDarwin then {
     # See: https://github.com/NixOS/nixpkgs/issues/390751
     DISPLAY = "nixpkgs-390751";
@@ -104,7 +107,7 @@ in {
     enable = true;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "docker" ];
+      plugins = [ "git" "docker" "docker-compose"];
       theme = "robbyrussell";
     };
   };
