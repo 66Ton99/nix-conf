@@ -6,6 +6,7 @@
 #    darwin.xcode
     colima
     gnused
+    usbutils
   ];
   
   imports = [

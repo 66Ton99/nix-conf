@@ -8,4 +8,10 @@ pkgs.mkShell {
   	python312Packages.poetry-core
   	python312Packages.pre-commit-hooks
   ];
+  
+  shellHook = ''
+    python -m venv .venv
+    source .venv/bin/activate
+  '';
 }
+

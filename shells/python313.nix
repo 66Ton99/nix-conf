@@ -7,4 +7,9 @@ pkgs.mkShell {
   	python313Packages.pip
   	python313Packages.poetry-core
   ];
+  
+  shellHook = ''
+    python -m venv .venv
+    source .venv/bin/activate
+  '';
 }

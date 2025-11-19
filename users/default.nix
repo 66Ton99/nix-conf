@@ -25,6 +25,7 @@
     git-lfs
     nmap
     openconnect
+#    conda
   ];
   
   
