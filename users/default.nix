@@ -26,6 +26,7 @@
     nmap
     openconnect
 #    conda
+    devenv
   ];
   
   
