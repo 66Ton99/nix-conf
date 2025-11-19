@@ -3,9 +3,11 @@
 pkgs.mkShell {
   packages = with pkgs; [
   	poetry
-  	python313
-  	python313Packages.pip
-  	python313Packages.poetry-core
+  	(python313.withPackages (ps: [ 
+  		ps.pip
+  		ps.poetry-core
+  		ps.pre-commit-hooks
+  	]))
   ];
   
   shellHook = ''
