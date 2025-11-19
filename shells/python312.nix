@@ -3,10 +3,10 @@
 pkgs.mkShell {
   packages = with pkgs; [
     poetry
-  	(python312.withPackages (ps: [ 
-  		ps.pip
-  		ps.poetry-core
-  		ps.pre-commit-hooks
+  	(python312.withPackages(p: with p; [ 
+  		pip
+  		poetry-core
+  		pre-commit-hooks
   	]))
   ];
   
