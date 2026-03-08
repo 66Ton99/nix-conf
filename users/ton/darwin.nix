@@ -7,6 +7,7 @@
     colima
     gnused
     usbutils
+    libreoffice-bin
   ];
   
   imports = [

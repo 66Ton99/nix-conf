@@ -13,6 +13,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    scrcpy
     wget
     docker
     docker-credential-helpers
@@ -27,6 +28,8 @@
     openconnect
 #    conda
     devenv
+    f3
+    minicom
   ];
   
   
