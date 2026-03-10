@@ -30,6 +30,7 @@
     devenv
     f3
     minicom
+    inetutils
   ];
   
   
