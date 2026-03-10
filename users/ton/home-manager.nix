@@ -26,7 +26,7 @@ let
 in {
   # Home-manager 22.11 requires this be set. We never set it so we have
   # to use the old state version.
-  home.stateVersion = "18.09";
+  home.stateVersion = "25.11";
 
   # Disabled for now since we mismatch our versions. See flake.nix for details.
   home.enableNixpkgsReleaseCheck = false;
@@ -107,6 +107,7 @@ in {
   
   programs.zsh = {
     enable = true;
+    dotDir = "${config.xdg.configHome}/zsh";
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" "docker" "docker-compose"];
@@ -152,20 +153,18 @@ in {
 #    ];
 #  };
 
-  programs.git = {
+  programs.git.settings = {
     enable = true;
-    userName = "Ton Sharp";
-    userEmail = "66ton99@gmail.com";
-    extraConfig = {
-      branch.autosetuprebase = "always";
-      color.ui = true;
-      core.askPass = ""; # needs to be empty to use terminal for ask pass
-      credential.helper = "store"; # want to make this more secure
-      github.user = "66Ton99";
-      push.default = "tracking";
-      init.defaultBranch = "main";
-      pull.rebase = true;
-    };
+    user.name = "Ton Sharp";
+    user.email = "66ton99@gmail.com";
+    branch.autosetuprebase = "always";
+    color.ui = true;
+    core.askPass = ""; # needs to be empty to use terminal for ask pass
+    credential.helper = "store"; # want to make this more secure
+    github.user = "66Ton99";
+    push.default = "tracking";
+    init.defaultBranch = "main";
+    pull.rebase = true;
   };
 
 #  programs.go = {

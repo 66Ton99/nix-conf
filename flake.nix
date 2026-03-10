@@ -5,10 +5,7 @@
     # Pin our primary nixpkgs repository. This is the main nixpkgs repository
     # we'll use for our configurations. Be very careful changing this because
     # it'll impact your entire system.
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-
-    # Used to get ibus 1.5.29 which has some quirks we want to test.
-    nixpkgs-old-ibus.url = "github:nixos/nixpkgs/e2dd4e18cc1c7314e24154331bae07df76eb582f";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 
     # We use the unstable nixpkgs repo for some packages.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
@@ -35,7 +32,7 @@
     };
 
     darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -72,11 +69,6 @@
         # Want the latest version of these
         claude-code = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.claude-code;
         nushell = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.nushell;
-
-        ibus = ibus_stable;
-        ibus_stable = inputs.nixpkgs.legacyPackages.${prev.system}.ibus;
-        ibus_1_5_29 = inputs.nixpkgs-old-ibus.legacyPackages.${prev.system}.ibus;
-        ibus_1_5_31 = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.ibus;
       })
     ];
 

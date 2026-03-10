@@ -3,8 +3,6 @@
 {
   imports = [
     ../modules/specialization/plasma.nix
-    ../modules/specialization/i3.nix
-    ../modules/specialization/gnome-ibus.nix
   ];
 
   # Be careful updating this.
@@ -60,20 +58,20 @@
     enable = true;
   };
 
-  # Select internationalisation properties.
-  i18n = {
-    defaultLocale = "en_US.UTF-8";
-    inputMethod = {
-      enable = true;
-      type = "fcitx5";
-      fcitx5.addons = with pkgs; [
-        fcitx5-chinese-addons
-        fcitx5-gtk
-        fcitx5-hangul
-        fcitx5-mozc
-      ];
-    };
-  };
+#  # Select internationalisation properties.
+#  i18n = {
+#    defaultLocale = "en_US.UTF-8";
+#    inputMethod = {
+#      enable = true;
+#      type = "fcitx5";
+#      fcitx5.addons = with pkgs; [
+#        fcitx5-chinese-addons
+#        fcitx5-gtk
+#        fcitx5-hangul
+#        fcitx5-mozc
+#      ];
+#    };
+#  };
 
   # Enable tailscale. We manually authenticate when we want with
   # "sudo tailscale up". If you don't use tailscale, you should comment
