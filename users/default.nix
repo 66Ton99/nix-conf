@@ -13,6 +13,10 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    gnumake
+    git
+    git-filter-repo
+    git-lfs
     scrcpy
     wget
     docker
@@ -22,8 +26,6 @@
     kubectl
     kind
     oci-cli
-    git-filter-repo
-    git-lfs
     nmap
     openconnect
 #    conda

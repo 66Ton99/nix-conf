@@ -72,9 +72,10 @@
       })
     ];
 
-    mkSystem = import ./lib/mksystem.nix {
-      inherit overlays nixpkgs inputs;
-    };
+  mkSystem = import ./lib/mksystem.nix {
+    inherit overlays nixpkgs inputs;
+  };
+
   in {
 #    nixosConfigurations.vm-aarch64 = mkSystem "vm-aarch64" {
 #      system = "aarch64-linux";
