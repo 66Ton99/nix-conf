@@ -17,5 +17,13 @@
     '';
   };
 
+  networking.hostName = "wsl";
+
+  fileSystems."/mnt/e" = {
+    device = "E:";
+    fsType = "drvfs";
+  };
+  
+
   system.stateVersion = "25.11";
 }
