@@ -8,6 +8,7 @@
     gnused
     usbutils
     libreoffice-bin
+    unstable.codex
   ];
   
   nixpkgs.config.permittedInsecurePackages = [

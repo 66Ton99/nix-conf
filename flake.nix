@@ -63,12 +63,21 @@
 #      inputs.zig.overlays.default
 
       (final: prev: rec {
+        system = prev.system;
+
         # gh CLI on stable has bugs.
-        gh = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.gh;
+        gh = inputs.nixpkgs-unstable.legacyPackages.${system}.gh;
 
         # Want the latest version of these
-        claude-code = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.claude-code;
-        nushell = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.nushell;
+        claude-code = inputs.nixpkgs-unstable.legacyPackages.${system}.claude-code;
+        nushell = inputs.nixpkgs-unstable.legacyPackages.${system}.nushell;
+
+        unstable = import inputs.nixpkgs-unstable {
+          inherit system;
+          # To use Chrome, we need to allow the
+          # installation of non-free software.
+          config.allowUnfree = true;
+        };
       })
     ];
 
