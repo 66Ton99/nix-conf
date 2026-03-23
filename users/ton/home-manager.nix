@@ -155,6 +155,10 @@ in {
 
   programs.git = {
     enable = true;
+    ignores = [
+      ".DS_Store"
+      ".idea"
+    ];
     settings = {
       user.name = "Ton Sharp";
       user.email = "github@66ton99.org.ua";
