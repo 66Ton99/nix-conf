@@ -28,6 +28,7 @@
     oci-cli
     nmap
     openconnect
+    xmlstarlet
 #    conda
     devenv
     f3
