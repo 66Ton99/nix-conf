@@ -11,6 +11,8 @@
     unstable.codex
   ];
   
+  environment.pathsToLink = [ "/libexec/openconnect" ];
+  
   nixpkgs.config.permittedInsecurePackages = [
     "lima-full-1.2.2"
     "lima-additional-guestagents-1.2.2"
@@ -53,6 +55,7 @@
     if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
       . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
     fi
+    export PATH="/Users/ton/bin:$PATH"
     # End Nix
   '';
 
