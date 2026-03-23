@@ -153,18 +153,20 @@ in {
 #    ];
 #  };
 
-  programs.git.settings = {
+  programs.git = {
     enable = true;
-    user.name = "Ton Sharp";
-    user.email = "66ton99@gmail.com";
-    branch.autosetuprebase = "always";
-    color.ui = true;
-    core.askPass = ""; # needs to be empty to use terminal for ask pass
-    credential.helper = "store"; # want to make this more secure
-    github.user = "66Ton99";
-    push.default = "tracking";
-    init.defaultBranch = "main";
-    pull.rebase = true;
+    settings = {
+      user.name = "Ton Sharp";
+      user.email = "github@66ton99.org.ua";
+      branch.autosetuprebase = "always";
+      color.ui = true;
+      core.askPass = ""; # needs to be empty to use terminal for ask pass
+      credential.helper = "store"; # want to make this more secure
+      github.user = "66Ton99";
+      push.default = "tracking";
+      init.defaultBranch = "main";
+      pull.rebase = true;
+    };
   };
 
 #  programs.go = {
