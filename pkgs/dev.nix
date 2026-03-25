@@ -4,7 +4,7 @@
 	gcc
     cmake
     sonar-scanner-cli
-#    nodejs_20
+    nodejs
     ant
     go
   ];
