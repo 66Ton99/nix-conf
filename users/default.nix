@@ -19,6 +19,7 @@
     git-lfs
     scrcpy
     wget
+    ripgrep
     docker
     docker-credential-helpers
     kubernetes-helm

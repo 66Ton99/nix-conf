@@ -1,7 +1,7 @@
 { pkgs, inputs, ... }:
 {
   environment.systemPackages = with pkgs; [
-#    gcc
+	gcc
     cmake
     sonar-scanner-cli
 #    nodejs_20
