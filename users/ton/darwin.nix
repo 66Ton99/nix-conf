@@ -8,7 +8,6 @@
     gnused
     usbutils
     libreoffice-bin
-    unstable.codex
   ];
   
   environment.pathsToLink = [ "/libexec/openconnect" ];
@@ -55,7 +54,6 @@
     if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
       . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
     fi
-    export PATH="/Users/ton/bin:$PATH"
     # End Nix
   '';
 

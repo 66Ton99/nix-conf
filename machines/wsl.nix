@@ -1,5 +1,7 @@
 { pkgs, currentSystemUser, ... }: {
-  imports = [];
+  imports = [
+    ../pkgs/dev.nix
+  ];
 
   wsl = {
     enable = true;

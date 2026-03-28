@@ -69,8 +69,7 @@ in {
 
   	LM_STUDIO_API_KEY = "dummy-api-key";
     LM_STUDIO_API_BASE = "http://localhost:1234/v1";
-    
-    PATH = "/Users/ton/bin:$PATH";
+    PATH=(if isDarwin then "/Users/ton/bin:$PATH" else "/home/ton/bin:$PATH");
   } // (if isDarwin then {
     # See: https://github.com/NixOS/nixpkgs/issues/390751
     DISPLAY = "nixpkgs-390751";

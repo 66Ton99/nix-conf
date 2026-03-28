@@ -7,5 +7,7 @@
     nodejs
     ant
     go
+    unstable.codex
+    bubblewrap
   ];
 }
