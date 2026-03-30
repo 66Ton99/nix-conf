@@ -17,6 +17,7 @@
     git
     git-filter-repo
     git-lfs
+    gh
     scrcpy
     wget
     ripgrep
