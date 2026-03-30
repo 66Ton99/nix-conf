@@ -1,6 +1,9 @@
 { pkgs, inputs, ... }:
 
 {
+  environment.systemPackages = with pkgs; [
+    bubblewrap
+  ];
   # https://github.com/nix-community/home-manager/pull/2408
 #  environment.pathsToLink = [ "/share/fish" ];
   programs.zsh.enable = true;

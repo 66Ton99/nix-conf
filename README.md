@@ -26,3 +26,16 @@ make switch
 # OR
 make
 ```
+
+## Platform-specific lock files
+This repo now keeps separate lock files per main platform:
+- `flake.lock.linux`
+- `flake.lock.darwin`
+
+`make switch`, `make test`, and `make flake/update` automatically use the right lock based on `uname`.
+
+To update a specific platform lock from any machine:
+```shell
+make flake/update LOCK_PLATFORM=linux
+make flake/update LOCK_PLATFORM=darwin
+```

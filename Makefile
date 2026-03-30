@@ -15,12 +15,14 @@ SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o Strict
 
 # We need to do some OS switching below.
 UNAME := $(shell uname)
+LOCK_PLATFORM ?= $(if $(filter Darwin,$(UNAME)),darwin,linux)
+LOCK_WRAPPER := ./scripts/with-platform-lock.sh $(LOCK_PLATFORM)
 
 switch:
 ifeq ($(UNAME), Darwin)
-	sudo NIXPKGS_ALLOW_UNFREE=1 darwin-rebuild switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
+	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 darwin-rebuild switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
 else
-	sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --impure --flake ".#${NIXNAME}"
+	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --impure --flake ".#${NIXNAME}"
 endif
 
 install:
@@ -28,7 +30,7 @@ install:
 
 setup:
 ifeq ($(UNAME), Darwin)
-	sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
+	$(LOCK_WRAPPER) sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
 endif
 
 uninstall:
@@ -37,20 +39,20 @@ uninstall:
 
 test:
 ifeq ($(UNAME), Darwin)
-	NIXPKGS_ALLOW_UNFREE=1 nix build --impure ".#darwinConfigurations.${NIXNAME}.system"
-	sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "$$(pwd)#${NIXNAME}"
+	$(LOCK_WRAPPER) NIXPKGS_ALLOW_UNFREE=1 nix build --impure ".#darwinConfigurations.${NIXNAME}.system"
+	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "$$(pwd)#${NIXNAME}"
 else
-	sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild test --impure --flake ".#$(NIXNAME)"
+	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild test --impure --flake ".#$(NIXNAME)"
 endif
 
 flake/update:
-	nix --extra-experimental-features "nix-command flakes" flake update
+	$(LOCK_WRAPPER) nix --extra-experimental-features "nix-command flakes" flake update
 
 # This builds the given NixOS configuration and pushes the results to the
 # cache. This does not alter the current running system. This requires
 # cachix authentication to be configured out of band.
 cache:
-	nix build '.#nixosConfigurations.$(NIXNAME).config.system.build.toplevel' --json \
+	$(LOCK_WRAPPER) nix build '.#nixosConfigurations.$(NIXNAME).config.system.build.toplevel' --json \
 		| jq -r '.[].outputs | to_entries[].value' \
 		| cachix push mitchellh-nixos-config
 
@@ -154,10 +156,11 @@ vm/copy:
 # have to run vm/copy before.
 vm/switch:
 	ssh $(SSH_OPTIONS) -p$(NIXPORT) $(NIXUSER)@$(NIXADDR) " \
+		cd /nix-config && ./scripts/with-platform-lock.sh linux \
 		sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake \"/nix-config#${NIXNAME}\" \
 	"
 
 # Build a WSL installer
 .PHONY: wsl
 wsl:
-	 nix build ".#nixosConfigurations.wsl.config.system.build.installer"
+	$(LOCK_WRAPPER) nix build ".#nixosConfigurations.wsl.config.system.build.installer"
