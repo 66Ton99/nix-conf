@@ -14,6 +14,7 @@
     # that this is extremely unstable and shouldn't be relied on. Its
     # mostly for testing.
     nixpkgs-master.url = "github:nixos/nixpkgs";
+    ton.url = "github:66Ton99/nixpkgs";
 
     # Build a custom WSL installer
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
@@ -75,6 +76,11 @@
           inherit system;
           # To use Chrome, we need to allow the
           # installation of non-free software.
+          config.allowUnfree = true;
+        };
+
+        ton = import inputs.ton {
+          inherit system;
           config.allowUnfree = true;
         };
       })

@@ -23,6 +23,7 @@
     ripgrep
     docker
     docker-credential-helpers
+    ton.nerdctl
     kubernetes-helm
     docker-buildx
     kubectl
