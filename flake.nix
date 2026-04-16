@@ -10,6 +10,9 @@
     # We use the unstable nixpkgs repo for some packages.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+    # My unstable fork for packages I want ahead of the main pin.
+    ton-unstable.url = "github:66Ton99/nixpkgs/nixos-unstable";
+
     # Master nixpkgs is used for really bleeding edge packages. Warning
     # that this is extremely unstable and shouldn't be relied on. Its
     # mostly for testing.
@@ -62,26 +65,41 @@
     overlays = [
 #      inputs.jujutsu.overlays.default
 #      inputs.zig.overlays.default
-      (final: prev: rec {
-        system = prev.system;
+      (final: prev: let
+        hostSystem = prev.stdenv.hostPlatform.system;
 
-        # gh CLI on stable has bugs.
-        gh = inputs.nixpkgs-unstable.legacyPackages.${system}.gh;
-
+        tonUnstableBase = import inputs.ton-unstable {
+          system = hostSystem;
+          config.allowUnfree = true;
+        };
+      in rec {
         # Want the latest version of these
-        claude-code = inputs.nixpkgs-unstable.legacyPackages.${system}.claude-code;
-        nushell = inputs.nixpkgs-unstable.legacyPackages.${system}.nushell;
+        claude-code = inputs.nixpkgs-unstable.legacyPackages.${hostSystem}.claude-code;
+        nushell = inputs.nixpkgs-unstable.legacyPackages.${hostSystem}.nushell;
 
         unstable = import inputs.nixpkgs-unstable {
-          inherit system;
+          system = hostSystem;
           # To use Chrome, we need to allow the
           # installation of non-free software.
           config.allowUnfree = true;
         };
 
         ton = import inputs.ton {
-          inherit system;
+          system = hostSystem;
           config.allowUnfree = true;
+        };
+
+        # codex 0.121.0 downloads a prebuilt WebRTC archive during build via
+        # reqwest/rustls. On Darwin inside the Nix sandbox it needs an explicit
+        # CA bundle to trust GitHub Releases.
+        ton-unstable = prev.lib.recursiveUpdate tonUnstableBase {
+          codex = tonUnstableBase.codex.overrideAttrs (old: {
+            nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.cacert ];
+            env = (old.env or { }) // {
+              SSL_CERT_FILE = "${prev.cacert}/etc/ssl/certs/ca-bundle.crt";
+              NIX_SSL_CERT_FILE = "${prev.cacert}/etc/ssl/certs/ca-bundle.crt";
+            };
+          });
         };
       })
     ];

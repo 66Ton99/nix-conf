@@ -7,7 +7,7 @@
     nodejs
     ant
     go
-    unstable.codex
+    pkgs."ton-unstable".codex
 #    rustc
 #    cargo
   ];
