@@ -4,7 +4,7 @@
   environment.systemPackages = with pkgs; [
 #    xcode-install
 #    darwin.xcode
-    colima
+    unstable.colima
     gnused
     usbutils
     libreoffice-bin

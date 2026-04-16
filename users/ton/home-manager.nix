@@ -158,6 +158,24 @@ in {
       ".DS_Store"
       ".idea"
     ];
+    includes = [
+      {
+        condition = "hasconfig:remote.*.url:git@github.com:**";
+        path = "${config.xdg.configHome}/git/config-github";
+      }
+      {
+        condition = "hasconfig:remote.*.url:https://github.com/**";
+        path = "${config.xdg.configHome}/git/config-github";
+      }
+      {
+        condition = "hasconfig:remote.*.url:git@orahub.oci.oraclecorp.com:**";
+        path = "${config.xdg.configHome}/git/config-orahub";
+      }
+      {
+        condition = "hasconfig:remote.*.url:https://orahub.oci.oraclecorp.com/**";
+        path = "${config.xdg.configHome}/git/config-orahub";
+      }
+    ];
     settings = {
       user.name = "Ton Sharp";
       user.email = "github@66ton99.org.ua";
@@ -171,6 +189,18 @@ in {
       pull.rebase = true;
     };
   };
+
+  xdg.configFile."git/config-github".text = ''
+    [user]
+      name = Ton Sharp
+      email = 45160296+66Ton99@users.noreply.github.com
+  '';
+
+  xdg.configFile."git/config-orahub".text = ''
+    [user]
+      name = Anton Shapka
+      email = anton.shapka@oracle.com
+  '';
 
 #  programs.go = {
 #    enable = true;

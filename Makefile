@@ -20,7 +20,7 @@ LOCK_WRAPPER := ./scripts/with-platform-lock.sh $(LOCK_PLATFORM)
 
 switch:
 ifeq ($(UNAME), Darwin)
-	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 darwin-rebuild switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
+	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 darwin-rebuild switch --impure --flake "path:$$(pwd)#${NIXNAME}" --show-trace
 else
 	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --impure --flake ".#${NIXNAME}"
 endif
@@ -30,7 +30,7 @@ install:
 
 setup:
 ifeq ($(UNAME), Darwin)
-	$(LOCK_WRAPPER) sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --impure --flake "$$(pwd)#${NIXNAME}" --show-trace
+	$(LOCK_WRAPPER) sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --impure --flake "path:$$(pwd)#${NIXNAME}" --show-trace
 endif
 
 uninstall:
@@ -40,7 +40,7 @@ uninstall:
 test:
 ifeq ($(UNAME), Darwin)
 	$(LOCK_WRAPPER) NIXPKGS_ALLOW_UNFREE=1 nix build --impure ".#darwinConfigurations.${NIXNAME}.system"
-	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "$$(pwd)#${NIXNAME}"
+	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "path:$$(pwd)#${NIXNAME}"
 else
 	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild test --impure --flake ".#$(NIXNAME)"
 endif
