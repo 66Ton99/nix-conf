@@ -6,6 +6,17 @@ let
 #  sources = import ../../nix/sources.nix;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
+  codexPkg = pkgs."ton-unstable".codex;
+  codexZshAsset = pkgs.fetchurl {
+    url = "https://github.com/openai/codex/releases/download/rust-v0.122.0/codex-zsh";
+    sha256 = "0ijv8s4x7qini9z4n92fz1wz6wvysxml6g6s1r142rap4fgd10pj";
+  };
+  codexZshCompletion = pkgs.runCommand "codex-zsh-completion" {
+    nativeBuildInputs = [ codexPkg ];
+  } ''
+    mkdir -p "$out/share/zsh/site-functions"
+    ${codexPkg}/bin/codex completion zsh > "$out/share/zsh/site-functions/_codex"
+  '';
 
   shellAliases = {
   } // (if isLinux then {
@@ -90,6 +101,8 @@ in {
 #    "ghostty/config".text = builtins.readFile ./ghostty.linux;
 #  } else {});
 
+  xdg.configFile."codex/codex-zsh".source = codexZshAsset;
+
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
@@ -107,6 +120,11 @@ in {
   programs.zsh = {
     enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
+    initExtra = ''
+      fpath=(${codexZshCompletion}/share/zsh/site-functions $fpath)
+      autoload -Uz compinit
+      compinit -i
+    '';
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" "docker" "docker-compose"];

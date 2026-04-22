@@ -17,6 +17,11 @@ SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o Strict
 UNAME := $(shell uname)
 LOCK_PLATFORM ?= $(if $(filter Darwin,$(UNAME)),darwin,linux)
 LOCK_WRAPPER := ./scripts/with-platform-lock.sh $(LOCK_PLATFORM)
+UPDATE_INPUTS := $(filter-out flake/update,$(MAKECMDGOALS))
+
+ifeq ($(firstword $(MAKECMDGOALS)),flake/update)
+$(foreach goal,$(UPDATE_INPUTS),$(eval .PHONY: $(goal))$(eval $(goal): ; @:))
+endif
 
 switch:
 ifeq ($(UNAME), Darwin)
@@ -46,7 +51,11 @@ else
 endif
 
 flake/update:
+ifneq ($(strip $(UPDATE_INPUTS)),)
+	$(LOCK_WRAPPER) nix --extra-experimental-features "nix-command flakes" flake update $(UPDATE_INPUTS)
+else
 	$(LOCK_WRAPPER) nix --extra-experimental-features "nix-command flakes" flake update
+endif
 
 # This builds the given NixOS configuration and pushes the results to the
 # cache. This does not alter the current running system. This requires

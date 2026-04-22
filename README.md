@@ -39,3 +39,9 @@ To update a specific platform lock from any machine:
 make flake/update LOCK_PLATFORM=linux
 make flake/update LOCK_PLATFORM=darwin
 ```
+
+To update only one flake input instead of all of them:
+```shell
+make flake/update ton-unstable
+make flake/update nixpkgs-unstable LOCK_PLATFORM=linux
+```
