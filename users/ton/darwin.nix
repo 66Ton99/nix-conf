@@ -57,6 +57,10 @@
     # End Nix
   '';
 
+  # Avoid docs/options.json evaluation path that currently emits
+  # builtins.derivation context warnings on this nixpkgs/nix-darwin combo.
+  documentation.enable = false;
+
   # Required for some settings like homebrew to know what user to apply to.
   system.primaryUser = "ton";
   

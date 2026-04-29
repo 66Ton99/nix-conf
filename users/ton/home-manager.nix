@@ -31,6 +31,7 @@ let
     ".DS_Store"
     ".idea"
     ".codex"
+    ".agents"
   ];
 
   # For our MANPAGER env var
@@ -138,6 +139,10 @@ in {
       theme = "robbyrussell";
     };
   };
+
+  # Avoid Home Manager options-doc generation path that emits
+  # builtins.derivation context warnings on current pins.
+  manual.manpages.enable = false;
   
 #  programs.chromium.enable = true;
 
