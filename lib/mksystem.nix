@@ -46,14 +46,18 @@ in systemFunc rec {
 
     machineConfig
     userOSConfig
-    home-manager.home-manager {
+    home-manager.home-manager
+    ({ codexPkg ? pkgs.codex, pkgs, ... }: {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
+      home-manager.extraSpecialArgs = {
+        inherit codexPkg;
+      };
       home-manager.users.${user} = import userHMConfig {
         isWSL = isWSL;
         inputs = inputs;
       };
-    }
+    })
 
     # We expose some extra arguments so that our modules can parameterize
     # better based on these values.

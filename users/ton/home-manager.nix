@@ -1,14 +1,13 @@
 { isWSL, inputs, ... }:
 
-{ config, lib, pkgs, ... }:
+{ config, codexPkg, lib, pkgs, ... }:
 
 let
 #  sources = import ../../nix/sources.nix;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
-  codexPkg = pkgs."ton-unstable".codex;
   codexZshAsset = pkgs.fetchurl {
-    url = "https://github.com/openai/codex/releases/download/rust-v0.122.0/codex-zsh";
+    url = "https://github.com/openai/codex/releases/download/rust-v${codexPkg.version}/codex-zsh";
     sha256 = "0ijv8s4x7qini9z4n92fz1wz6wvysxml6g6s1r142rap4fgd10pj";
   };
   codexZshCompletion = pkgs.runCommand "codex-zsh-completion" {

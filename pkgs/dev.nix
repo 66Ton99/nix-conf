@@ -1,5 +1,10 @@
 { pkgs, inputs, ... }:
+let
+  codexPkg = pkgs.unstable.codex;
+in
 {
+  _module.args.codexPkg = codexPkg;
+
   environment.systemPackages = with pkgs; [
     gcc
     cmake
@@ -8,7 +13,7 @@
     nodejs
     ant
     go
-    unstable.codex
+    codexPkg
 #    rustc
 #    cargo
   ];
