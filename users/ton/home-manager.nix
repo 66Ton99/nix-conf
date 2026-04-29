@@ -27,6 +27,12 @@ let
     nc = "ncat";
   } else {});
 
+  gitIgnores = [
+    ".DS_Store"
+    ".idea"
+    ".codex"
+  ];
+
   # For our MANPAGER env var
   # https://github.com/sharkdp/bat/issues/1145
   manpager = (pkgs.writeShellScriptBin "manpager" (if isDarwin then ''
@@ -102,6 +108,7 @@ in {
 #  } else {});
 
   xdg.configFile."codex/codex-zsh".source = codexZshAsset;
+  home.file.".gitignore".text = lib.concatStringsSep "\n" (gitIgnores ++ [ "" ]);
 
   #---------------------------------------------------------------------
   # Programs
@@ -120,7 +127,7 @@ in {
   programs.zsh = {
     enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
-    initExtra = ''
+    initContent = ''
       fpath=(${codexZshCompletion}/share/zsh/site-functions $fpath)
       autoload -Uz compinit
       compinit -i
@@ -172,10 +179,7 @@ in {
 
   programs.git = {
     enable = true;
-    ignores = [
-      ".DS_Store"
-      ".idea"
-    ];
+    ignores = gitIgnores;
     includes = [
       {
         condition = "hasconfig:remote.*.url:git@github.com:**";

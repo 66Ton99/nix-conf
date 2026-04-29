@@ -3,11 +3,12 @@
   environment.systemPackages = with pkgs; [
     gcc
     cmake
+    oci-cli
     sonar-scanner-cli
     nodejs
     ant
     go
-    pkgs."ton-unstable".codex
+    unstable.codex
 #    rustc
 #    cargo
   ];
