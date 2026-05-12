@@ -31,6 +31,7 @@ let
     ".idea"
     ".codex"
     ".agents"
+    ".oca"
   ];
 
   # For our MANPAGER env var
