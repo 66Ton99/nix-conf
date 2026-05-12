@@ -6,6 +6,8 @@ let
       xdebug
       apcu
       xsl
+      gnupg
+      pdo
     ]));
     extraConfig = ''
       xdebug.mode=debug

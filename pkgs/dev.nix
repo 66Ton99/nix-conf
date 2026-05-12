@@ -9,8 +9,10 @@ in
     gcc
     cmake
     oci-cli
+    google-cloud-sdk
     sonar-scanner-cli
     nodejs
+    bun
     ant
     go
     codexPkg
