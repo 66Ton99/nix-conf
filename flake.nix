@@ -27,6 +27,10 @@
     nix-snapd.url = "github:nix-community/nix-snapd";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Hugging Face packages
+    hf-nix.url = "github:huggingface/hf-nix";
+    hf-nix.inputs.nixpkgs.follows = "nixpkgs";
+
     home-manager = {
       # We need to use nightly home-manager because it contains this
       # fix we need for nushell nightly:
