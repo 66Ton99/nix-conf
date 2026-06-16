@@ -18,6 +18,8 @@ UNAME := $(shell uname)
 LOCK_PLATFORM ?= $(if $(filter Darwin,$(UNAME)),darwin,linux)
 LOCK_WRAPPER := ./scripts/with-platform-lock.sh $(LOCK_PLATFORM)
 UPDATE_INPUTS := $(filter-out flake/update,$(MAKECMDGOALS))
+DARWIN_FLAKE := path:$(MAKEFILE_DIR)\#$(NIXNAME)
+DARWIN_SYSTEM := path:$(MAKEFILE_DIR)\#darwinConfigurations.$(NIXNAME).system
 
 ifeq ($(firstword $(MAKECMDGOALS)),flake/update)
 $(foreach goal,$(UPDATE_INPUTS),$(eval .PHONY: $(goal))$(eval $(goal): ; @:))
@@ -25,7 +27,8 @@ endif
 
 switch:
 ifeq ($(UNAME), Darwin)
-	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 darwin-rebuild switch --impure --flake "path:$$(pwd)#${NIXNAME}" --show-trace
+	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
+	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild switch --impure --flake "$(DARWIN_FLAKE)" --show-trace
 else
 	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --impure --flake ".#${NIXNAME}"
 endif
@@ -44,8 +47,8 @@ uninstall:
 
 test:
 ifeq ($(UNAME), Darwin)
-	$(LOCK_WRAPPER) NIXPKGS_ALLOW_UNFREE=1 nix build --impure ".#darwinConfigurations.${NIXNAME}.system"
-	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "path:$$(pwd)#${NIXNAME}"
+	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
+	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "$(DARWIN_FLAKE)"
 else
 	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild test --impure --flake ".#$(NIXNAME)"
 endif

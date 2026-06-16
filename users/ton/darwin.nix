@@ -7,6 +7,7 @@
     unstable.colima
     gnused
     usbutils
+    monitorcontrol
     libreoffice-bin
   ];
   
