@@ -45,6 +45,10 @@ uninstall:
 	sudo darwin-uninstaller && \
 	/nix/nix-installer uninstall
 
+.PHONY: clean
+clean:
+	nix-store --gc
+
 test:
 ifeq ($(UNAME), Darwin)
 	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
