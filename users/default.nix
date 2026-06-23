@@ -22,11 +22,11 @@
     scrcpy
     wget
     ripgrep
-    docker
+    unstable.docker
     docker-credential-helpers
     ton.nerdctl
     kubernetes-helm
-    docker-buildx
+    unstable.docker-buildx
     kubectl
     kind
     oci-cli
