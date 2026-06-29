@@ -8,7 +8,7 @@ let
   isLinux = pkgs.stdenv.isLinux;
   codexZshAsset = pkgs.fetchurl {
     url = "https://github.com/openai/codex/releases/download/rust-v${codexPkg.version}/codex-zsh";
-    sha256 = "0ijv8s4x7qini9z4n92fz1wz6wvysxml6g6s1r142rap4fgd10pj";
+    sha256 = "0xb36hl6zhb0la983ggb669gvaqfbj3am8z433kq8c9wwf78m2bp";
   };
   codexZshCompletion = pkgs.runCommand "codex-zsh-completion" {
     nativeBuildInputs = [ codexPkg ];

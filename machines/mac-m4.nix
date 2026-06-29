@@ -14,10 +14,6 @@ in {
   ];
 
   nixpkgs.config.android_sdk.accept_license = true;
-  nixpkgs.overlays = [
-    inputs.hf-nix.overlays.default
-  ];
-
   environment.systemPackages = with pkgs; [
     android-tools
     androidSdk.androidsdk
