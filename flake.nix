@@ -31,6 +31,13 @@
     hf-nix.url = "github:huggingface/hf-nix";
     hf-nix.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Prebuilt OpenClaw CLI published by upstream. Keep this as an input so
+    # the source hash lives in flake.lock instead of the package expression.
+    openclaw-npm = {
+      url = "https://registry.npmjs.org/openclaw/-/openclaw-2026.6.5.tgz";
+      flake = false;
+    };
+
     home-manager = {
       # Keep Home Manager on the release branch matching nixpkgs. Newer
       # master revisions can depend on nixpkgs library files that are not
@@ -76,16 +83,22 @@
           system = hostSystem;
           config.allowUnfree = true;
         };
+        unstableBase = import inputs.nixpkgs-unstable {
+          system = hostSystem;
+          # To use Chrome, we need to allow the
+          # installation of non-free software.
+          config.allowUnfree = true;
+        };
+        openclaw-bin = unstableBase.callPackage ./pkgs/openclaw-bin.nix {
+          openclawSrc = inputs.openclaw-npm;
+        };
       in rec {
         # Want the latest version of these
         claude-code = inputs.nixpkgs-unstable.legacyPackages.${hostSystem}.claude-code;
         nushell = inputs.nixpkgs-unstable.legacyPackages.${hostSystem}.nushell;
 
-        unstable = import inputs.nixpkgs-unstable {
-          system = hostSystem;
-          # To use Chrome, we need to allow the
-          # installation of non-free software.
-          config.allowUnfree = true;
+        unstable = unstableBase // {
+          openclaw = openclaw-bin;
         };
 
         ton = import inputs.ton {

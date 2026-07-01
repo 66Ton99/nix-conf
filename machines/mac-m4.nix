@@ -20,6 +20,7 @@ in {
     python3Packages.hf-transfer
     python3Packages.hf-xet
     python3Packages.huggingface-hub
+    unstable.openclaw
   ];
   # lmstudio
 

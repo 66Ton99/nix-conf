@@ -250,6 +250,19 @@
         "type": "github"
       }
     },
+    "openclaw-npm": {
+      "flake": false,
+      "locked": {
+        "lastModified": 499162500,
+        "narHash": "sha256-PYJCa/FpOLUth44Fbojw6fSIkf0XNLyAt/xsYr1KCUA=",
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/openclaw/-/openclaw-2026.6.5.tgz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/openclaw/-/openclaw-2026.6.5.tgz"
+      }
+    },
     "root": {
       "inputs": {
         "darwin": "darwin",
@@ -260,6 +273,7 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "openclaw-npm": "openclaw-npm",
         "ton": "ton",
         "ton-unstable": "ton-unstable"
       }
