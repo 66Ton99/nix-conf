@@ -1,5 +1,17 @@
 {
   "nodes": {
+    "codex-zsh": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-IRjy5Q0y2GKHZ364yIViUj9n3fH+WvNxtb2ZSy+dY1c=",
+        "type": "file",
+        "url": "https://github.com/openai/codex/releases/download/rust-v0.121.0/codex-zsh"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/openai/codex/releases/download/rust-v0.121.0/codex-zsh"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -196,6 +208,7 @@
     },
     "root": {
       "inputs": {
+        "codex-zsh": "codex-zsh",
         "darwin": "darwin",
         "home-manager": "home-manager",
         "nix-snapd": "nix-snapd",

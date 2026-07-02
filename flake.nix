@@ -38,6 +38,13 @@
       flake = false;
     };
 
+    # Shell integration asset for the pinned Codex package. Keep this as an
+    # input so the source hash lives in flake.lock instead of home-manager.nix.
+    codex-zsh = {
+      url = "https://github.com/openai/codex/releases/download/rust-v0.121.0/codex-zsh";
+      flake = false;
+    };
+
     home-manager = {
       # Keep Home Manager on the release branch matching nixpkgs. Newer
       # master revisions can depend on nixpkgs library files that are not
@@ -78,16 +85,19 @@
 #      inputs.zig.overlays.default
       (final: prev: let
         hostSystem = prev.stdenv.hostPlatform.system;
+        nixpkgsConfig = {
+          allowUnfree = true;
+        } // prev.lib.optionalAttrs (hostSystem == "x86_64-darwin") {
+          allowDeprecatedx86_64Darwin = true;
+        };
 
         tonUnstableBase = import inputs.ton-unstable {
           system = hostSystem;
-          config.allowUnfree = true;
+          config = nixpkgsConfig;
         };
         unstableBase = import inputs.nixpkgs-unstable {
           system = hostSystem;
-          # To use Chrome, we need to allow the
-          # installation of non-free software.
-          config.allowUnfree = true;
+          config = nixpkgsConfig;
         };
         openclaw-bin = unstableBase.callPackage ./pkgs/openclaw-bin.nix {
           openclawSrc = inputs.openclaw-npm;
@@ -103,7 +113,7 @@
 
         ton = import inputs.ton {
           system = hostSystem;
-          config.allowUnfree = true;
+          config = nixpkgsConfig;
         };
 
         # codex 0.121.0 downloads a prebuilt WebRTC archive during build via

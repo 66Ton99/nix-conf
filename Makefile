@@ -17,6 +17,7 @@ SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o Strict
 UNAME := $(shell uname)
 LOCK_PLATFORM ?= $(if $(filter Darwin,$(UNAME)),darwin,linux)
 LOCK_WRAPPER := ./scripts/with-platform-lock.sh $(LOCK_PLATFORM)
+NIX_EXPERIMENTAL := --extra-experimental-features "nix-command flakes"
 UPDATE_INPUTS := $(filter-out flake/update,$(MAKECMDGOALS))
 DARWIN_FLAKE := path:$(MAKEFILE_DIR)\#$(NIXNAME)
 DARWIN_SYSTEM := path:$(MAKEFILE_DIR)\#darwinConfigurations.$(NIXNAME).system
@@ -27,7 +28,7 @@ endif
 
 switch:
 ifeq ($(UNAME), Darwin)
-	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
+	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
 	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild switch --impure --flake "$(DARWIN_FLAKE)" --show-trace
 else
 	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --impure --flake ".#${NIXNAME}"
@@ -51,7 +52,7 @@ clean:
 
 test:
 ifeq ($(UNAME), Darwin)
-	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
+	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
 	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "$(DARWIN_FLAKE)"
 else
 	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild test --impure --flake ".#$(NIXNAME)"
@@ -59,9 +60,9 @@ endif
 
 flake/update:
 ifneq ($(strip $(UPDATE_INPUTS)),)
-	$(LOCK_WRAPPER) nix --extra-experimental-features "nix-command flakes" flake update $(UPDATE_INPUTS)
+	$(LOCK_WRAPPER) nix $(NIX_EXPERIMENTAL) flake update $(UPDATE_INPUTS)
 else
-	$(LOCK_WRAPPER) nix --extra-experimental-features "nix-command flakes" flake update
+	$(LOCK_WRAPPER) nix $(NIX_EXPERIMENTAL) flake update
 endif
 
 # This builds the given NixOS configuration and pushes the results to the

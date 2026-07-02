@@ -6,10 +6,6 @@ let
 #  sources = import ../../nix/sources.nix;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
-  codexZshAsset = pkgs.fetchurl {
-    url = "https://github.com/openai/codex/releases/download/rust-v${codexPkg.version}/codex-zsh";
-    sha256 = "0xb36hl6zhb0la983ggb669gvaqfbj3am8z433kq8c9wwf78m2bp";
-  };
   codexZshCompletion = pkgs.runCommand "codex-zsh-completion" {
     nativeBuildInputs = [ codexPkg ];
   } ''
@@ -108,7 +104,7 @@ in {
 #    "ghostty/config".text = builtins.readFile ./ghostty.linux;
 #  } else {});
 
-  xdg.configFile."codex/codex-zsh".source = codexZshAsset;
+  xdg.configFile."codex/codex-zsh".source = inputs.codex-zsh;
   home.file.".gitignore".text = lib.concatStringsSep "\n" (gitIgnores ++ [ "" ]);
 
   #---------------------------------------------------------------------

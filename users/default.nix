@@ -18,6 +18,7 @@
     git-filter-repo
     git-lfs
     gh
+    glab
     go-passbolt-cli
     scrcpy
     wget

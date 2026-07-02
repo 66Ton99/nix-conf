@@ -38,6 +38,11 @@ in systemFunc rec {
     # Allow unfree packages.
     { nixpkgs.config.allowUnfree = true; }
 
+    # x86_64-darwin is deprecated upstream but still used by mac-i9.
+    (if system == "x86_64-darwin" then {
+      nixpkgs.config.allowDeprecatedx86_64Darwin = true;
+    } else {})
+
     # Bring in WSL if this is a WSL build
     (if isWSL then inputs.nixos-wsl.nixosModules.wsl else {})
 
