@@ -102,6 +102,7 @@
         openclaw-bin = unstableBase.callPackage ./pkgs/openclaw-bin.nix {
           openclawSrc = inputs.openclaw-npm;
         };
+        opencode-bin = unstableBase.callPackage ./pkgs/opencode-bin.nix { };
       in rec {
         # Want the latest version of these
         claude-code = inputs.nixpkgs-unstable.legacyPackages.${hostSystem}.claude-code;
@@ -109,6 +110,10 @@
 
         unstable = unstableBase // {
           openclaw = openclaw-bin;
+          opencode =
+            if prev.stdenv.hostPlatform.isDarwin
+            then opencode-bin
+            else unstableBase.opencode;
         };
 
         ton = import inputs.ton {

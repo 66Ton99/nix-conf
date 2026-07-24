@@ -81,6 +81,7 @@ in {
 #    AMP_API_KEY = "op://Private/Amp_API/credential";
 #    OPENAI_API_KEY = "op://Private/OpenAPI_Personal/credential";
 
+  	LM_API_TOKEN = "dummy-api-key";
   	LM_STUDIO_API_KEY = "dummy-api-key";
     LM_STUDIO_API_BASE = "http://localhost:1234/v1";
     PATH=(if isDarwin then "/Users/ton/bin:$PATH" else "/home/ton/bin:$PATH");

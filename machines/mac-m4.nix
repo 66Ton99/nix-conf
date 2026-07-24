@@ -21,6 +21,7 @@ in {
     python3Packages.hf-xet
     python3Packages.huggingface-hub
     unstable.openclaw
+    unstable.opencode
   ];
   # lmstudio
 
