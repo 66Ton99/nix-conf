@@ -10,6 +10,10 @@
     # We use the unstable nixpkgs repo for some packages.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+    # nixpkgs-unstable moved to 26.11, which no longer supports Intel Macs.
+    # Keep x86_64-darwin on the newest supported branch instead.
+    nixpkgs-unstable-x86_64-darwin.url = "github:nixos/nixpkgs/nixpkgs-26.05-darwin";
+
     # My unstable fork for packages I want ahead of the main pin.
     ton-unstable.url = "github:66Ton99/nixpkgs/nixos-unstable";
 
@@ -95,7 +99,11 @@
           system = hostSystem;
           config = nixpkgsConfig;
         };
-        unstableBase = import inputs.nixpkgs-unstable {
+        unstableInput =
+          if hostSystem == "x86_64-darwin"
+          then inputs.nixpkgs-unstable-x86_64-darwin
+          else inputs.nixpkgs-unstable;
+        unstableBase = import unstableInput {
           system = hostSystem;
           config = nixpkgsConfig;
         };
@@ -105,8 +113,8 @@
         opencode-bin = unstableBase.callPackage ./pkgs/opencode-bin.nix { };
       in rec {
         # Want the latest version of these
-        claude-code = inputs.nixpkgs-unstable.legacyPackages.${hostSystem}.claude-code;
-        nushell = inputs.nixpkgs-unstable.legacyPackages.${hostSystem}.nushell;
+        claude-code = unstableInput.legacyPackages.${hostSystem}.claude-code;
+        nushell = unstableInput.legacyPackages.${hostSystem}.nushell;
 
         unstable = unstableBase // {
           openclaw = openclaw-bin;

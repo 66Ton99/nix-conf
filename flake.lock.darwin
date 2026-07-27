@@ -262,6 +262,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-unstable-x86_64-darwin": {
+      "locked": {
+        "lastModified": 1784755387,
+        "narHash": "sha256-uxq8JKEE6bjRst96QKwH5snLXC5QkrqoY+CYuhGqGQg=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "2b7a84e696b76759b60bea1eafd62fa34fb96a6e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixpkgs-26.05-darwin",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "openclaw-npm": {
       "flake": false,
       "locked": {
@@ -286,6 +302,7 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "nixpkgs-unstable-x86_64-darwin": "nixpkgs-unstable-x86_64-darwin",
         "openclaw-npm": "openclaw-npm",
         "ton": "ton",
         "ton-unstable": "ton-unstable"
