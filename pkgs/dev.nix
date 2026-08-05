@@ -21,6 +21,7 @@ in
     antWithJdk
     go
     codexPkg
+    unstable.claude-code
 #    rustc
 #    cargo
   ];
