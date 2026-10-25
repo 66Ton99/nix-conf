@@ -13,6 +13,7 @@ in
   environment.systemPackages = with pkgs; [
     gcc
     cmake
+    ffmpeg
     oci-cli
     google-cloud-sdk
     sonar-scanner-cli
@@ -22,6 +23,7 @@ in
     go
     codexPkg
     unstable.claude-code
+    unstable.gemini-cli-bin
 #    rustc
 #    cargo
   ];

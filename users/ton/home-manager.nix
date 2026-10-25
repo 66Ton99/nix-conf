@@ -28,6 +28,7 @@ let
     ".codex"
     ".agents"
     ".oca"
+    "/server-infra"
   ];
 
   # For our MANPAGER env var

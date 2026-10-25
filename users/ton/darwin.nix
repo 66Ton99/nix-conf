@@ -9,6 +9,7 @@
     usbutils
     monitorcontrol
     libreoffice-bin
+    grandperspective
   ];
   
   environment.pathsToLink = [ "/libexec/openconnect" ];

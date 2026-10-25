@@ -14,7 +14,7 @@
 
   environment.systemPackages = with pkgs; [
     gnumake
-    git
+    gitFull
     git-filter-repo
     git-lfs
     gh
@@ -39,6 +39,7 @@
     f3
     minicom
     inetutils
+    ack
   ];
   
   
