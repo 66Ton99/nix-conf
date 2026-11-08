@@ -15,11 +15,18 @@ SSH_OPTIONS=-o PubkeyAuthentication=no -o UserKnownHostsFile=/dev/null -o Strict
 
 # We need to do some OS switching below.
 UNAME := $(shell uname)
+# NixOS privilege elevation must use its setuid wrapper, even inside nix shells.
+SUDO ?= $(if $(wildcard /run/wrappers/bin/sudo),/run/wrappers/bin/sudo,sudo)
+# Keep rebuild and its subprocesses independent of nix-shell and sudo PATHs.
+NIXOS_REBUILD ?= /run/current-system/sw/bin/nixos-rebuild
+NIXOS_ENV := /run/current-system/sw/bin/env PATH=/run/wrappers/bin:/run/current-system/sw/bin
 LOCK_PLATFORM ?= $(if $(filter Darwin,$(UNAME)),darwin,linux)
 LOCK_WRAPPER := ./scripts/with-platform-lock.sh $(LOCK_PLATFORM)
 NIX_EXPERIMENTAL := --extra-experimental-features "nix-command flakes"
 UPDATE_INPUTS := $(filter-out flake/update,$(MAKECMDGOALS))
-DARWIN_FLAKE := path:$(MAKEFILE_DIR)\#$(NIXNAME)
+SYSTEM_FLAKE := path:$(MAKEFILE_DIR)\#$(NIXNAME)
+DARWIN_FLAKE := $(SYSTEM_FLAKE)
+NIXOS_SYSTEM := path:$(MAKEFILE_DIR)\#nixosConfigurations.$(NIXNAME).config.system.build.toplevel
 DARWIN_SYSTEM := path:$(MAKEFILE_DIR)\#darwinConfigurations.$(NIXNAME).system
 
 ifeq ($(firstword $(MAKECMDGOALS)),flake/update)
@@ -29,9 +36,23 @@ endif
 switch:
 ifeq ($(UNAME), Darwin)
 	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
-	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild switch --impure --flake "$(DARWIN_FLAKE)" --show-trace
+	$(LOCK_WRAPPER) $(SUDO) NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild switch --impure --flake "$(DARWIN_FLAKE)" --show-trace
 else
-	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --impure --flake ".#${NIXNAME}"
+	$(LOCK_WRAPPER) $(SUDO) $(NIXOS_ENV) NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 $(NIXOS_REBUILD) switch --impure --flake "$(SYSTEM_FLAKE)"
+endif
+
+# Build and inspect without activating the system or requiring sudo.
+.PHONY: build dry-activate
+build:
+ifeq ($(UNAME), Darwin)
+	$(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) "$(DARWIN_SYSTEM)" --no-write-lock-file
+else
+	$(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) "$(NIXOS_SYSTEM)" --no-write-lock-file
+endif
+
+dry-activate: build
+ifeq ($(UNAME), Linux)
+	$(SUDO) $(NIXOS_ENV) ./result/bin/switch-to-configuration dry-activate
 endif
 
 install:
@@ -39,7 +60,7 @@ install:
 
 setup:
 ifeq ($(UNAME), Darwin)
-	$(LOCK_WRAPPER) sudo nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --impure --flake "path:$$(pwd)#${NIXNAME}" --show-trace
+	$(LOCK_WRAPPER) $(SUDO) nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --impure --flake "path:$$(pwd)#${NIXNAME}" --show-trace
 endif
 
 uninstall:
@@ -53,9 +74,9 @@ clean:
 test:
 ifeq ($(UNAME), Darwin)
 	NIXPKGS_ALLOW_UNFREE=1 $(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) --impure "$(DARWIN_SYSTEM)" --show-trace --no-write-lock-file
-	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "$(DARWIN_FLAKE)"
+	$(LOCK_WRAPPER) $(SUDO) NIXPKGS_ALLOW_UNFREE=1 ./result/sw/bin/darwin-rebuild test --impure --flake "$(DARWIN_FLAKE)"
 else
-	$(LOCK_WRAPPER) sudo NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild test --impure --flake ".#$(NIXNAME)"
+	$(LOCK_WRAPPER) $(SUDO) $(NIXOS_ENV) NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 $(NIXOS_REBUILD) test --impure --flake "$(SYSTEM_FLAKE)"
 endif
 
 flake/update:

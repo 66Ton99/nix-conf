@@ -4,6 +4,20 @@ This is clone of https://github.com/mitchellh/nixos-config all basic documentati
 
 I made some changes for my cases.
 
+## This NixOS machine
+
+`ton-machine` is the Apple T2 MacBook running NixOS. Its configuration and
+reinstallation prerequisites are documented in [machines/ton-machine](machines/ton-machine/README.md).
+
+```sh
+cd ~/nix
+make build
+make switch
+```
+
+Edit `machines/ton-machine/` for this machine's settings. The working NixOS
+26.05 and hardware inputs are pinned separately from the other hosts.
+
 ## Install Nix
 ```shell
 curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate

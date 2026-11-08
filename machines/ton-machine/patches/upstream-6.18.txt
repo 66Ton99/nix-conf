@@ -1,0 +1,4 @@
+Source: https://github.com/t2linux/linux-t2-patches/tree/4bd58ee8d301c7ee199fe8640276813d50f7357a
+Branch: 6.18
+Archive SHA256: 8eb3af66baa96c92863d4f704ab6e6774ba286018b615a8f9bd4e150642111cd
+Verified: all 23 upstream patches apply to Linux 6.18.57 without rejected hunks.

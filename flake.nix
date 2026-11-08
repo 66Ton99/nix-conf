@@ -7,6 +7,11 @@
     # it'll impact your entire system.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 
+    # Preserve the working T2 Linux setup independently of the shared 25.11 pin.
+    nixpkgs-ton-machine.url = "https://releases.nixos.org/nixos/26.05/nixos-26.05.12658.1f607aa79b63/nixexprs.tar.xz";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/1b418b8f203e49a92f250f8babdd19af1b6f7a7f";
+    nixos-hardware.inputs.nixpkgs.follows = "nixpkgs-ton-machine";
+
     # We use the unstable nixpkgs repo for some packages.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
@@ -158,6 +163,13 @@
 #      system = "x86_64-linux";
 #      user   = "ton";
 #    };
+
+    nixosConfigurations.ton-machine = inputs.nixpkgs-ton-machine.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs.t2Hardware = inputs.nixos-hardware;
+      modules = [ ./machines/ton-machine ];
+    };
+    nixosConfigurations.ton-nixos = self.nixosConfigurations.ton-machine;
 
     nixosConfigurations.wsl = mkSystem "wsl" {
       system = "x86_64-linux";

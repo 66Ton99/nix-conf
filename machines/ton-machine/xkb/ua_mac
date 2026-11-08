@@ -1,0 +1,13 @@
+// Keep macOS punctuation with the user's Ukrainian letter positions.
+default partial alphanumeric_keys
+xkb_symbols "basic" {
+    include "ua(macOS)"
+
+    name[Group1] = "Ukrainian (Mac, corrected)";
+
+    key <AC02> { [ Ukrainian_i, Ukrainian_I, Cyrillic_yeru, Cyrillic_YERU ] };
+    key <AB05> { [ Cyrillic_i, Cyrillic_I, Ukrainian_i, Ukrainian_I ] };
+
+    key <TLDE> { [ Ukrainian_ghe_with_upturn, Ukrainian_GHE_WITH_UPTURN, backslash, bar ] };
+    key <BKSL> { [ apostrophe, asciitilde, bracketright, bracketleft ] };
+};

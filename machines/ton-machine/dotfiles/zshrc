@@ -1,0 +1,19 @@
+# A graphical launcher can replace PATH after NixOS exported its init marker.
+# Restore the normal profile environment when that happened, while preserving
+# intentionally isolated nix-shell environments.
+if [[ -z ${IN_NIX_SHELL-} && ":${PATH-}:" != *:/run/current-system/sw/bin:* ]]; then
+  source /etc/set-environment
+fi
+
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.config/nixos/zsh/.histfile
+HISTSIZE=1000
+SAVEHIST=1000
+bindkey -e
+# End of lines configured by zsh-newuser-install
+# The following lines were added by compinstall
+zstyle :compinstall filename '/home/ton/.config/nixos/zsh/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
