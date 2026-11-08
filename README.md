@@ -23,6 +23,14 @@ modules in `machines/ton-machine/` and the shared `pkgs/dev.nix` tools.
 The working NixOS 26.05 and hardware inputs remain pinned separately from
 the other hosts.
 
+The shared `pkgs/dev.nix` installs Google Antigravity App (`antigravity`),
+Antigravity IDE (`antigravity-ide`), and Antigravity CLI (`agy`)
+on every configured host, including WSL and
+both Intel and Apple Silicon Macs. Antigravity CLI replaces Gemini CLI.
+The CLI and Intel Mac GUI builds use pinned official Google releases; the other
+GUI builds follow the existing unstable lock. Run `make switch` on each
+machine to apply the shared configuration.
+
 ## Install Nix
 ```shell
 curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate

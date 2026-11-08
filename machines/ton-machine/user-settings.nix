@@ -25,7 +25,26 @@ in {
   '';
 
   home-manager.backupFileExtension = "before-home-manager";
+  home-manager.sharedModules = [
+    ({ lib, pkgs, ... }: {
+      # Home Manager 25.11 still uses pkgs.xorg.lndir for home-files.
+      # Use its canonical dependency with this host's newer nixpkgs.
+      options.home-files = lib.mkOption {
+        apply = files: files.overrideAttrs { nativeBuildInputs = [ pkgs.lndir ]; };
+      };
+    })
+  ];
   home-manager.users.ton = { config, lib, ... }: {
+    dconf.settings."org/gnome/shell".favorite-apps = [
+      "google-chrome.desktop"
+      "org.gnome.Calendar.desktop"
+      "org.gnome.Music.desktop"
+      "org.gnome.TextEditor.desktop"
+      "org.gnome.Nautilus.desktop"
+      "chatgpt.desktop"
+      "antigravity-hub.desktop"
+      "antigravity-ide.desktop"
+    ];
     # Keep NixOS desktop and shell state separate from the shared Oracle home.
     xdg = {
       configHome = "/home/ton/.config/nixos";

@@ -27,6 +27,15 @@ To update this machine's packages separately, run
 `make flake/update nixpkgs-ton-machine nixos-hardware LOCK_PLATFORM=linux`;
 change the pinned URLs in `flake.nix` when intentionally upgrading them.
 
+The official OpenAI GUI with Codex is installed only on this host through
+`pkgs/codex-desktop.nix`. Upstream now names the Linux app ChatGPT: launch
+**ChatGPT** from the applications menu, or run `chatgpt` / `codex-desktop`.
+The package pins the official Debian download by version and SHA-256 and
+adapts its native libraries for NixOS; updates go through a rebuild.
+NixOS is not an officially supported distribution for the Linux preview.
+Home Manager pins ChatGPT, Antigravity App, and Antigravity IDE to GNOME's favorites alongside
+the existing Chrome, Calendar, Music, Text Editor, and Files launchers.
+
 `user-settings.nix` adds host-specific Home Manager settings for Zsh, Chrome
 default associations, and GTK bookmarks. `keyboard.nix` declares US/Ukrainian
 input sources and macOS shortcuts through the system dconf profile and xremap.

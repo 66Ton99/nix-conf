@@ -6,7 +6,7 @@ let
   ];
   ciscoLibraries = coreLibraries ++ (with pkgs; [
     gtk3 glib atk pango cairo gdk-pixbuf libxml2_13
-    xorg.libX11 xorg.libXext xorg.libXtst xorg.libXrender
+    libx11 libxext libxtst libxrender
   ]);
   makeRuntime = libraries: vendorDirectories: {
     NIX_LD = pkgs.stdenv.cc.bintools.dynamicLinker;
