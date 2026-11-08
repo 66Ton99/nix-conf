@@ -13,6 +13,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    direnv
     gnumake
     gitFull
     git-filter-repo
@@ -31,6 +32,7 @@
     kubectl
     kind
     oci-cli
+    flarectl
     nmap
     openconnect
     xmlstarlet
