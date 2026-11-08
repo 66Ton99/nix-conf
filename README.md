@@ -15,8 +15,13 @@ make build
 make switch
 ```
 
-Edit `machines/ton-machine/` for this machine's settings. The working NixOS
-26.05 and hardware inputs are pinned separately from the other hosts.
+`ton-machine` uses the same `lib/mksystem.nix` builder as the other hosts:
+`users/default.nix` supplies shared packages and fonts, `users/ton/nixos.nix`
+supplies Linux user defaults, and `users/ton/home-manager.nix` manages the
+shared user environment. `machines/ton-machine.nix` imports the machine's
+modules in `machines/ton-machine/` and the shared `pkgs/dev.nix` tools.
+The working NixOS 26.05 and hardware inputs remain pinned separately from
+the other hosts.
 
 ## Install Nix
 ```shell

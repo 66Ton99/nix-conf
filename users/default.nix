@@ -1,4 +1,4 @@
-{ pkgs, inputs, home, ... }:
+{ pkgs, ... }:
 {
   fonts.packages = with pkgs; [
     noto-fonts

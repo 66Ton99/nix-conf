@@ -46,16 +46,6 @@
   };
 
   services.xserver.enable = true;
-  services.xserver.xkb = {
-    layout = "us,ua_mac";
-    variant = "";
-    options = "grp:alt_shift_toggle";
-    extraLayouts.ua_mac = {
-      description = "Ukrainian (Mac, corrected)";
-      languages = [ "ukr" ];
-      symbolsFile = ./xkb/ua_mac;
-    };
-  };
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
   services.pipewire = {
@@ -76,9 +66,10 @@
     createHome = false;
     description = "ton";
     extraGroups = [ "wheel" "networkmanager" "dialout" ];
-    shell = pkgs.zsh;
     # Runtime file outside this flake: the hash is never copied into /nix/store.
     hashedPasswordFile = "/etc/nixos-secrets/ton-password-hash";
+    hashedPassword = null;
+    openssh.authorizedKeys.keys = [ ];
   };
 
   # Per-user paths are configured in desktop-repair.nix; GDM keeps its own environment.
@@ -89,7 +80,7 @@
     histFile = "$HOME/.local/state/nixos/zsh/history";
   };
   environment.systemPackages = with pkgs; [
-    guake git gnumake vim curl wget pciutils usbutils cryptsetup chromium
+    guake vim curl pciutils usbutils cryptsetup chromium
   ];
   systemd.tmpfiles.rules = [
     "d /home/ton/.config/nixos 0700 ton ton -"

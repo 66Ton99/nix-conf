@@ -2,36 +2,50 @@
 let
   configHome = "/home/ton/.config/nixos";
   backupDir = "/home/ton/.local/state/nixos/config-backups";
-  files = [
-    { name = "zshrc"; target = "zsh/.zshrc"; source = ./dotfiles/zshrc; }
-    { name = "mimeapps.list"; target = "mimeapps.list"; source = ./dotfiles/mimeapps.list; }
-    { name = "gtk-bookmarks"; target = "gtk-3.0/bookmarks"; source = ./dotfiles/gtk-bookmarks; }
+  legacyFiles = [
+    { target = "zsh/.zshrc"; name = "zshrc"; }
+    { target = "mimeapps.list"; name = "mimeapps.list"; }
+    { target = "gtk-3.0/bookmarks"; name = "gtk-bookmarks"; }
   ];
-  linkFile = file: ''
-    destination=${lib.escapeShellArg "${configHome}/${file.target}"}
-    ${pkgs.coreutils}/bin/install -d -m 0700 -o ton -g ton "$(dirname "$destination")"
-    if [ ! -L "$destination" ] || [ "$(readlink "$destination")" != ${lib.escapeShellArg "${file.source}"} ]; then
-      if [ -e "$destination" ] || [ -L "$destination" ]; then
-        ${pkgs.coreutils}/bin/cp -a --backup=numbered "$destination" ${lib.escapeShellArg "${backupDir}/${file.name}"}
-      fi
-      ${pkgs.coreutils}/bin/ln -sfn ${lib.escapeShellArg "${file.source}"} "$destination"
-      ${pkgs.coreutils}/bin/chown -h ton:ton "$destination"
-    fi
-  '';
 in {
-  # Capture preferences from the running desktop; window history stays mutable.
-  programs.dconf.profiles.user.databases = [ {
-    # Keep the declared layout authoritative over previously saved GNOME sources.
-    locks = [ "/org/gnome/desktop/input-sources/sources" ];
-    settings."org/gnome/desktop/input-sources" = {
-      sources = with lib.gvariant; [ (mkTuple [ "xkb" "us" ]) (mkTuple [ "xkb" "ua_mac" ]) ];
-      xkb-options = lib.gvariant.mkEmptyArray lib.gvariant.type.string;
-    };
-  } ];
-
-  # Manage only selected configuration files, preserving the originals on adoption.
-  system.activationScripts.ton-user-settings = lib.stringAfter [ "users" ] ''
+  # Home Manager cannot adopt foreign symlinks with backupFileExtension.
+  # Move only links owned by the previous system activation script.
+  system.activationScripts.ton-adopt-home-manager = lib.stringAfter [ "users" ] ''
     ${pkgs.coreutils}/bin/install -d -m 0700 -o ton -g ton ${lib.escapeShellArg backupDir}
-    ${lib.concatMapStringsSep "\n" linkFile files}
+    ${lib.concatMapStringsSep "\n" (file: ''
+      destination=${lib.escapeShellArg "${configHome}/${file.target}"}
+      if [ -L "$destination" ]; then
+        case "$(${pkgs.coreutils}/bin/readlink "$destination")" in
+          /nix/store/*-${file.name})
+            ${pkgs.coreutils}/bin/mv --backup=numbered "$destination" ${lib.escapeShellArg "${backupDir}/${file.name}"}
+            ;;
+        esac
+      fi
+    '') legacyFiles}
   '';
+
+  home-manager.backupFileExtension = "before-home-manager";
+  home-manager.users.ton = { config, lib, ... }: {
+    # Keep NixOS desktop and shell state separate from the shared Oracle home.
+    xdg = {
+      configHome = "/home/ton/.config/nixos";
+      cacheHome = "/home/ton/.cache/nixos";
+      dataHome = "/home/ton/.local/share/nixos";
+      stateHome = "/home/ton/.local/state/nixos";
+      configFile."mimeapps.list".source = ./dotfiles/mimeapps.list;
+      configFile."gtk-3.0/bookmarks".source = ./dotfiles/gtk-bookmarks;
+    };
+    home.sessionPath = [ ];
+    # These files and the default GnuPG home are shared with Oracle Linux.
+    programs.bash.enable = lib.mkForce false;
+    programs.gpg.enable = lib.mkForce false;
+    home.file.".zshenv".enable = false;
+    programs.zsh = {
+      initContent = lib.mkBefore (builtins.readFile ./dotfiles/zshrc);
+      history.path = "${config.xdg.configHome}/zsh/.histfile";
+      envExtra = ''
+        export SCREENDIR="$HOME/.local/state/screen"
+      '';
+    };
+  };
 }

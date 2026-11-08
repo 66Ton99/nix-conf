@@ -164,10 +164,11 @@
 #      user   = "ton";
 #    };
 
-    nixosConfigurations.ton-machine = inputs.nixpkgs-ton-machine.lib.nixosSystem {
+    nixosConfigurations.ton-machine = mkSystem "ton-machine" {
       system = "x86_64-linux";
+      user = "ton";
+      nixpkgsInput = inputs.nixpkgs-ton-machine;
       specialArgs.t2Hardware = inputs.nixos-hardware;
-      modules = [ ./machines/ton-machine ];
     };
     nixosConfigurations.ton-nixos = self.nixosConfigurations.ton-machine;
 

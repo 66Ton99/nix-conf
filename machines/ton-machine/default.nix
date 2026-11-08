@@ -10,5 +10,6 @@
     ./shared-opt.nix
     ./desktop-repair.nix
     ./user-settings.nix
+    ./keyboard.nix
   ];
 }
