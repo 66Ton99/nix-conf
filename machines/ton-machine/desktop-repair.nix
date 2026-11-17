@@ -61,6 +61,7 @@ in {
   programs.dconf.profiles.user.databases = [ {
     settings = {
       "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [ shortcut ];
+      "org/gnome/desktop/peripherals/touchpad".disable-while-typing = true;
       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/nixos-guake" = {
         name = "Guake";
         command = "${pkgs.guake}/bin/guake-toggle";
@@ -73,6 +74,7 @@ in {
       };
       "org/guake/keybindings/global".show-hide = "F1";
     };
+    locks = [ "/org/gnome/desktop/peripherals/touchpad/disable-while-typing" ];
   } ];
   environment.systemPackages = [ pkgs.gnome-console ];
   systemd.user.services.guake = {

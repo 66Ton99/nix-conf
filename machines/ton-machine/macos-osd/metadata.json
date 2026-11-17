@@ -1,0 +1,7 @@
+{
+  "uuid": "macos-osd@ton",
+  "name": "macOS-style OSD",
+  "description": "Even out GNOME brightness changes and style indicators like macOS.",
+  "shell-version": ["49", "50"],
+  "version": 1
+}

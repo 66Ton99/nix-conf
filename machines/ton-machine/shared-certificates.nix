@@ -25,6 +25,14 @@ let
     test -d ${oracle}/usr/share/pki/ca-trust-source
     exec ${pkgs.bash}/bin/bash ${updateScript} "$@"
   '';
+  trustOFSLocalCaNss = pkgs.writeShellScript "trust-ofs-local-ca-nss-databases" ''
+    set -eu
+    for db in /home/ton/.pki/nssdb /home/ton/.local/share/nixos/pki/nssdb; do
+      if [ -f "$db/cert9.db" ]; then
+        ${pkgs.nss.tools}/bin/certutil -M -d "sql:$db" -n "OFS local development root CA" -t "CT,,"
+      fi
+    done
+  '';
 in {
   nixpkgs.config.allowUnfreePredicate = pkg:
     lib.getName pkg == "google-chrome";
@@ -57,6 +65,19 @@ in {
     CURL_CA_BUNDLE = lib.mkForce "/etc/ssl/certs/ca-certificates.crt";
     SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+  };
+
+  # Chromium reads NSS trust flags separately from the system CA bundle.
+  # Trust the local OFS development root in both supported NSS databases.
+  systemd.user.services.ofs-local-ca-nss-trust = {
+    description = "Trust the OFS local development CA in shared NSS databases";
+    wantedBy = [ "default.target" ];
+    unitConfig.ConditionPathExists = "/home/ton/.pki/nssdb/cert9.db";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${trustOFSLocalCaNss}";
+      RemainAfterExit = true;
+    };
   };
 
   # Older Chrome uses ~/.pki/nssdb, already on the shared home. Keep its

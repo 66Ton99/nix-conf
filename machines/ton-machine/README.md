@@ -27,13 +27,38 @@ To update this machine's packages separately, run
 `make flake/update nixpkgs-ton-machine nixos-hardware LOCK_PLATFORM=linux`;
 change the pinned URLs in `flake.nix` when intentionally upgrading them.
 
+## Rootless Podman and kind
+
+Podman stores rootless container data below `/var/lib/containers/ton`, backed
+by `/mnt/oracle/var/lib/containers/ton`. The Oracle filesystem keeps its
+`nosuid,nodev` flags; the dedicated container-storage bind mount enables
+`suid,dev`. The checked-in `kind-ofs.yaml` pins the tested node image and
+preserves the existing OFS node's port mapping and data/source mounts. Kind
+uses this image only when creating a node; it does not change an existing
+node's image. The active OFS cluster is managed by
+`/mnt/src/OFS/docker/kind/start.sh` and must not be recreated without an etcd
+data recovery plan. `kind-ofs-runtime.nix` switches the existing node's CRI
+snapshotter to its bundled `fuse-overlayfs` service in place, preserving the
+node image and etcd volume. A user systemd timer reapplies the runtime repair
+after node restarts.
+
+
+## Touch ID and Biometric Unlock
+
+This machine is configured with Touch ID via the `KaiT2en` bridge and `fprintd`:
+- Biometric verification: PAM is configured with `fprintAuth = true` for `sudo`.
+- Manual SEP unlock: `t2-touchid-unlock`, `t2-keybag-unlock`, `sks-lock-state`, and the signed `t2sep.ko` module are installed and provisioned automatically.
+- Commands:
+  - `sudo t2-touchid-unlock --check-only` (read-only precheck)
+  - `sudo t2-touchid-unlock --accept-risk` (manual keybag unlock with macOS password)
+
 The official OpenAI GUI with Codex is installed only on this host through
 `pkgs/codex-desktop.nix`. Upstream now names the Linux app ChatGPT: launch
 **ChatGPT** from the applications menu, or run `chatgpt` / `codex-desktop`.
 The package pins the official Debian download by version and SHA-256 and
 adapts its native libraries for NixOS; updates go through a rebuild.
 NixOS is not an officially supported distribution for the Linux preview.
-Home Manager pins ChatGPT, Antigravity App, and Antigravity IDE to GNOME's favorites alongside
+Home Manager pins ChatGPT, Antigravity App, and IntelliJ IDEA to GNOME's favorites alongside
 the existing Chrome, Calendar, Music, Text Editor, and Files launchers.
 
 `user-settings.nix` adds host-specific Home Manager settings for Zsh, Chrome
@@ -43,10 +68,11 @@ Home Manager keeps the existing
 NixOS-specific XDG directories, uses the shared Git and Oh My Zsh configuration,
 and leaves Oracle Linux's shared Bash startup files, `~/.zshenv`, and default
 GnuPG directory unmanaged. The custom
-`ua_mac` layout in `xkb/ua_mac` keeps macOS punctuation with І on S, И on B,
-Ґ/ґ on the backtick key, and apostrophe/tilde on the backslash key. GNOME input
-sources and keyboard preferences are locked so saved desktop settings cannot
-override them. After first applying these settings, log out and back in so GNOME
+`ua_mac` layout in `xkb/ua_mac` puts `?` on Shift+7 and `.`/`,` on one key
+(comma with Shift), with І on S, И on B, Ґ/ґ on the backtick key, and
+apostrophe/tilde on the backslash key. GNOME input sources and keyboard
+preferences are locked so saved desktop settings cannot override them. After
+first applying these settings, log out and back in so GNOME
 loads the XKB directory, the xremap extension, and the new input/uinput groups.
 The xremap user service runs only in ton's GNOME session and watches for newly
 connected keyboards. Physical Control and Option/Alt retain their modifier
@@ -67,6 +93,54 @@ roles; Command is the existing Super key on the Apple keyboard.
 | Command+Backspace | Delete to start of line |
 | Command+M / Command+H | Minimize current window |
 | Control+Command+Q | Lock screen |
+| Power button (short press) | Lock screen; when already locked, wake the display |
+
+`touchbar-lock.nix` follows logind's active local session lock state. A small
+tiny-dfr patch turns the Touch Bar off while the session is locked and restores
+its normal brightness and idle behavior after unlocking. This also applies to
+locking through Control+Command+Q or GNOME, without suspending the laptop.
+The daemon refreshes the lock state at least every 250 ms, even without input;
+its normal dimming and idle timeouts are preserved.
+
+The ACPI `Power Button` is grabbed by the system `power-button-lock` service
+before GDM starts. On an unlocked desktop, `KEY_POWER` calls GNOME's
+`org.gnome.ScreenSaver.Lock` method on ton's session bus directly. If the screen
+shield is already active, it sends Esc through the persistent ydotool virtual
+keyboard to wake GNOME and reveal the login UI, preserving authentication.
+Setting display power alone left GNOME's fade overlay visible.
+Before locking with the power button, a user unit saves the actual internal
+panel brightness. The `lock-brightness` user service restores it through
+Mutter's `SetBacklight` after unlocking, updating GNOME and the driver together.
+It then explicitly reapplies the same value through logind's session
+`SetBrightness` method, so an unchanged cached value cannot skip the hardware
+write after the panel wakes.
+Ambient-light adjustment and idle dimming are disabled declaratively so GNOME
+keeps the manually chosen brightness across lock and wake transitions.
+GNOME 49 moved brightness hotkeys from Settings Daemon into GNOME Shell, so
+GNOME Shell handles the Apple brightness keys and its native OSD. The bundled
+`macos-osd` extension applies an approximate gamma 2.2 curve between the
+normalized Shell slider and the backlight value, making slider and key changes
+more even across the range. It also styles brightness and volume indicators as
+translucent dark pills with a white level bar. GNOME Shell keeps ownership of
+the backlight, slider, and OSD.
+Virtual `KEY_COFFEE` events reached the
+session but did not activate GNOME's lock shortcut on this host. The button is
+not included in xremap's automatic keyboard selection. logind also locks on power presses if the service is
+unavailable. Firmware-enforced emergency power-off on a prolonged hold remains
+outside the operating system's control.
+
+The conflicting kernel module `tiny_power_button` is blacklisted both through
+modprobe and the kernel command line. On Linux 6.18.57 it can take ownership of
+the ACPI power button and send signal 38 (`SIGRTMIN+4`) directly to PID 1,
+bypassing GNOME, logind and xremap. This blacklist requires a reboot after
+`make switch`; the regular `button` module must remain enabled.
+
+The kernel also includes upstream fix `ab06eb920401` to register platform
+devices for fixed-event buttons. Linux 6.18.57 omitted this prerequisite when
+converting the button driver to a platform driver, leaving `LNXPWRBN:00`
+without an input device. The patched kernel disables `ACPI_TINY_POWER_BUTTON`
+and restores fixed-event input through the regular `button` driver. Kernel
+changes require rebooting into the newly built generation.
 
 Guake binds Command+C/V natively through its declared GTK accelerators, so
 clipboard shortcuts also work before xremap starts. xremap recognizes its

@@ -66,6 +66,8 @@ in
     antigravityApp
     antigravityIde
     antigravityCli
+    kind
+    podman
 #    rustc
 #    cargo
   ];

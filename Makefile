@@ -47,7 +47,7 @@ build:
 ifeq ($(UNAME), Darwin)
 	$(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) "$(DARWIN_SYSTEM)" --no-write-lock-file
 else
-	$(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) "$(NIXOS_SYSTEM)" --no-write-lock-file
+	$(LOCK_WRAPPER) nix build $(NIX_EXPERIMENTAL) --impure "$(NIXOS_SYSTEM)" --no-write-lock-file
 endif
 
 dry-activate: build

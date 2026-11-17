@@ -35,26 +35,50 @@ in {
     })
   ];
   home-manager.users.ton = { config, lib, ... }: {
-    dconf.settings."org/gnome/shell".favorite-apps = [
-      "google-chrome.desktop"
-      "org.gnome.Calendar.desktop"
-      "org.gnome.Music.desktop"
-      "org.gnome.TextEditor.desktop"
-      "org.gnome.Nautilus.desktop"
-      "chatgpt.desktop"
-      "antigravity-hub.desktop"
-      "antigravity-ide.desktop"
-    ];
+    dconf.settings = {
+      # Suspend only on explicit request, never after an idle timeout.
+      "org/gnome/settings-daemon/plugins/power" = {
+        sleep-inactive-ac-type = "nothing";
+        sleep-inactive-battery-type = "nothing";
+      };
+      "org/gnome/desktop/interface".color-scheme = "prefer-dark";
+      "org/gnome/desktop/interface".show-battery-percentage = true;
+      "org/gnome/shell".favorite-apps = [
+        "google-chrome.desktop"
+        "org.gnome.Calendar.desktop"
+        "org.gnome.Music.desktop"
+        "org.gnome.TextEditor.desktop"
+        "org.gnome.Nautilus.desktop"
+        "chatgpt.desktop"
+        "antigravity-hub.desktop"
+        "intellij-idea.desktop"
+        "sqldeveloper.desktop"
+      ];
+    };
     # Keep NixOS desktop and shell state separate from the shared Oracle home.
     xdg = {
       configHome = "/home/ton/.config/nixos";
       cacheHome = "/home/ton/.cache/nixos";
       dataHome = "/home/ton/.local/share/nixos";
       stateHome = "/home/ton/.local/state/nixos";
+      # Preserve the paths already stored in Podman's database. The shared
+      # home symlink resolves through /var/lib/containers/ton to Oracle's root.
+      configFile."containers/storage.conf".text = ''
+        [storage]
+        driver = "overlay"
+        graphroot = "/home/ton/.local/share/containers/storage"
+      '';
+      configFile."containers/containers.conf".text = ''
+        [engine]
+        static_dir = "/home/ton/.local/share/containers/storage/libpod"
+        volume_path = "/home/ton/.local/share/containers/storage/volumes"
+      '';
       configFile."mimeapps.list".source = ./dotfiles/mimeapps.list;
       configFile."gtk-3.0/bookmarks".source = ./dotfiles/gtk-bookmarks;
     };
     home.sessionPath = [ ];
+    # Route Docker Compose and other Docker API clients to ton's rootless Podman socket.
+    home.sessionVariables.DOCKER_HOST = "unix:///run/user/1000/podman/podman.sock";
     # These files and the default GnuPG home are shared with Oracle Linux.
     programs.bash.enable = lib.mkForce false;
     programs.gpg.enable = lib.mkForce false;

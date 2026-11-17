@@ -4,6 +4,19 @@ let
   # pinned unstable package so validation never needs to open input devices.
   xremap = pkgs.unstable.xremap;
   extension = pkgs.gnomeExtensions.xremap;
+  macosOsd = pkgs.stdenvNoCC.mkDerivation {
+    pname = "ton-macos-osd";
+    version = "1.0.0";
+    src = ./macos-osd;
+    installPhase = ''
+      runHook preInstall
+      install -d "$out/share/gnome-shell/extensions/macos-osd@ton"
+      install -m644 metadata.json extension.js stylesheet.css \
+        "$out/share/gnome-shell/extensions/macos-osd@ton/"
+      runHook postInstall
+    '';
+  };
+  sessionPython = pkgs.python3.withPackages (p: [ p.dbus-python p.pygobject3 ]);
   emptyShortcuts = lib.gvariant.mkEmptyArray lib.gvariant.type.string;
   # Nix's executable wrapper is also Guake's actual WM_CLASS on this host.
   guake = "/(?i)^\\.?guake(-wrapped)?$/";
@@ -89,6 +102,37 @@ let
     ${lib.getExe xremap} --validate-config ${rawConfig}
     cp ${rawConfig} "$out"
   '';
+  lockScreen = pkgs.writeShellScript "power-button-lock-screen" ''
+    set -eu
+    bus() {
+      ${pkgs.systemd}/bin/busctl \
+        --address="unix:path=/run/power-button-users/$(${pkgs.coreutils}/bin/id -u)/bus" "$@"
+    }
+    active=$(bus call org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver GetActive)
+    if [ "$active" = "b true" ]; then
+      # Real input wakes GNOME's shield as well as the physical display.
+      # Merely setting PowerSaveMode leaves its fade overlay visible.
+      YDOTOOL_SOCKET=/run/ydotoold/socket ${pkgs.ydotool}/bin/ydotool key 1:1 1:0
+    else
+      DBUS_SESSION_BUS_ADDRESS="unix:path=/run/power-button-users/$(${pkgs.coreutils}/bin/id -u)/bus" \
+      XDG_RUNTIME_DIR="/run/power-button-users/$(${pkgs.coreutils}/bin/id -u)" \
+        ${pkgs.systemd}/bin/systemctl --user start lock-brightness-capture.service || true
+      bus call org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver Lock
+    fi
+  '';
+  rawPowerButtonConfig = (pkgs.formats.yaml { }).generate "power-button.yaml" {
+    keymap = [ {
+      name = "Physical power button locks or wakes the locked screen";
+      # Invoke GNOME directly: the virtual KEY_COFFEE events reach the session
+      # but GNOME does not activate its screen-lock accelerator on this host.
+      # xremap discards launched commands' stderr; preserve D-Bus failures.
+      remap.KEY_POWER.launch = [ "${pkgs.systemd}/bin/systemd-cat" "-t" "power-button-lock-screen" "${lockScreen}" ];
+    } ];
+  };
+  powerButtonConfig = pkgs.runCommand "power-button.yaml" { } ''
+    ${lib.getExe xremap} --validate-config ${rawPowerButtonConfig}
+    cp ${rawPowerButtonConfig} "$out"
+  '';
   settings = {
     "org/gnome/desktop/input-sources" = {
       sources = with lib.gvariant; [ (mkTuple [ "xkb" "us" ]) (mkTuple [ "xkb" "ua_mac" ]) ];
@@ -114,13 +158,56 @@ let
       clipboard-copy = "<Super>c";
       clipboard-paste = "<Super>v";
     };
-    "org/gnome/settings-daemon/plugins/media-keys".screensaver = [ "<Control><Super>q" ];
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      screensaver = [ "<Control><Super>q" "XF86PowerOff" ];
+      screensaver-static = [ "XF86ScreenSaver" ];
+      # Release GNOME's built-in power action so the lock binding owns the key.
+      power = emptyShortcuts;
+      power-static = emptyShortcuts;
+    };
+    "org/gnome/settings-daemon/plugins/power" = {
+      power-button-action = "nothing";
+      # Keep the manually selected level stable across idle/lock transitions.
+      ambient-enabled = false;
+      idle-dim = false;
+    };
     "org/gnome/shell" = {
-      enabled-extensions = [ extension.extensionUuid ];
+      enabled-extensions = [ extension.extensionUuid "macos-osd@ton" ];
       disable-user-extensions = false;
     };
   };
 in {
+  # Fallback when GNOME is not handling power keys (for example on a TTY).
+  services.logind.settings.Login = {
+    HandlePowerKey = "lock";
+    HandlePowerKeyLongPress = "lock";
+  };
+
+  # ACPI's Power Button is not a keyboard and is skipped by xremap's default
+  # device selection. Grab it separately, before GDM, so neither GNOME nor
+  # logind receives a physical KEY_POWER event. No desktop connection is needed.
+  systemd.services.power-button-lock = {
+    description = "Lock GNOME directly on ACPI power button presses";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-udev-trigger.service" "ydotoold.service" ];
+    requires = [ "ydotoold.service" ];
+    before = [ "display-manager.service" ];
+    serviceConfig = {
+      ExecStart = "${lib.getExe xremap} --desktop=none --allow-launch=true --device 'Power Button' --output-device-name 'xremap power-button' --watch=device ${powerButtonConfig}";
+      User = "ton";
+      SupplementaryGroups = [ "input" "uinput" "ydotool" ];
+      Restart = "always";
+      RestartSec = "1s";
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      # Keep home directories hidden. Expose only runtime session sockets at
+      # a separate mount point; uid permissions still restrict access to ton.
+      BindReadOnlyPaths = [ "/run/user:/run/power-button-users" ];
+      UMask = "0077";
+    };
+  };
+
   services.xserver.xkb = {
     layout = "us,ua_mac";
     variant = "";
@@ -140,9 +227,44 @@ in {
       map (key: "/${schema}/${key}") (builtins.attrNames values)) settings);
   } ];
 
-  environment.systemPackages = [ xremap extension ];
+  # xremap grabs the built-in keyboard and emits its keystrokes through a
+  # virtual device. Mark that output as internal so libinput pairs it with
+  # the built-in touchpad for disable-while-typing.
+  environment.etc."libinput/local-overrides.quirks".text = ''
+    [xremap]
+    MatchName=xremap
+    MatchUdevType=keyboard
+    AttrKeyboardIntegration=internal
+  '';
+
+  environment.systemPackages = [ xremap extension macosOsd ];
   hardware.uinput.enable = true;
+  programs.ydotool.enable = true;
   users.users.ton.extraGroups = [ "input" "uinput" ];
+  systemd.user.services.lock-brightness-capture = {
+    description = "Save actual panel brightness before locking GNOME";
+    wants = [ "lock-brightness.service" ];
+    after = [ "lock-brightness.service" ];
+    unitConfig.ConditionUser = "ton";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${sessionPython}/bin/python3 ${./lock-brightness.py} capture";
+      UMask = "0077";
+    };
+  };
+  systemd.user.services.lock-brightness = {
+    description = "Restore panel brightness after unlocking GNOME";
+    wantedBy = [ "gnome-session.target" ];
+    after = [ "gnome-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    unitConfig.ConditionUser = "ton";
+    serviceConfig = {
+      ExecStart = "${sessionPython}/bin/python3 ${./lock-brightness.py} watch";
+      Restart = "on-failure";
+      RestartSec = 2;
+      UMask = "0077";
+    };
+  };
   # Follow xremap's upstream user-service setup, using the existing nixpkgs pin:
   # https://github.com/xremap/nix-flake/blob/master/modules/user-service.nix
   systemd.user.services.xremap = {
@@ -154,7 +276,7 @@ in {
     serviceConfig = {
       # The first switch adds group membership; it takes effect at next login.
       ExecCondition = "${pkgs.coreutils}/bin/test -w /dev/uinput";
-      ExecStart = "${lib.getExe xremap} --desktop=gnome --watch=device --no-window-logging ${keyboardConfig}";
+      ExecStart = "${lib.getExe xremap} --desktop=gnome --ignore 'xremap power-button' --output-device-name 'xremap' --watch=device --no-window-logging ${keyboardConfig}";
       Restart = "on-failure";
       RestartSec = "3s";
       UMask = "0077";

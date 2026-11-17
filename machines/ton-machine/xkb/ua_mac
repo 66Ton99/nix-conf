@@ -1,4 +1,4 @@
-// Keep macOS punctuation with the user's Ukrainian letter positions.
+// Match the macOS Ukrainian punctuation with the user's letter positions.
 default partial alphanumeric_keys
 xkb_symbols "basic" {
     include "ua(macOS)"
@@ -7,6 +7,12 @@ xkb_symbols "basic" {
 
     key <AC02> { [ Ukrainian_i, Ukrainian_I, Cyrillic_yeru, Cyrillic_YERU ] };
     key <AB05> { [ Cyrillic_i, Cyrillic_I, Ukrainian_i, Ukrainian_I ] };
+
+    // Match Ukrainian/macOS: ? is Shift+7; period and comma share the key
+    // immediately right of Ю, with comma on Shift.
+    key <AE06> { [ 6, colon, less ] };
+    key <AE07> { [ 7, question, ampersand, U204B ] };
+    key <AB10> { [ period, comma, slash, ellipsis ] };
 
     key <TLDE> { [ Ukrainian_ghe_with_upturn, Ukrainian_GHE_WITH_UPTURN, backslash, bar ] };
     key <BKSL> { [ apostrophe, asciitilde, bracketright, bracketleft ] };

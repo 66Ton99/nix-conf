@@ -9,7 +9,7 @@
 
     # Preserve the working T2 Linux setup independently of the shared 25.11 pin.
     nixpkgs-ton-machine.url = "https://releases.nixos.org/nixos/26.05/nixos-26.05.12658.1f607aa79b63/nixexprs.tar.xz";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/1b418b8f203e49a92f250f8babdd19af1b6f7a7f";
+    nixos-hardware.url = "path:/mnt/src/nixos-hardware";
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs-ton-machine";
 
     # We use the unstable nixpkgs repo for some packages.

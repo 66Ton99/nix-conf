@@ -1,4 +1,12 @@
-{ pkgs, ... }:
+{ pkgs, currentSystemName ? null, ... }:
+let
+  # This host exposes Podman through the Docker-compatible CLI. Keep the
+  # Docker CLI and its buildx plugin on other hosts only.
+  dockerCliPackages = pkgs.lib.optionals (currentSystemName != "ton-machine") [
+    pkgs.unstable.docker
+    pkgs.unstable.docker-buildx
+  ];
+in
 {
   fonts.packages = with pkgs; [
     noto-fonts
@@ -24,11 +32,9 @@
     scrcpy
     wget
     ripgrep
-    unstable.docker
     docker-credential-helpers
     ton.nerdctl
     kubernetes-helm
-    unstable.docker-buildx
     kubectl
     kind
     oci-cli
@@ -42,7 +48,10 @@
     minicom
     inetutils
     ack
-  ];
+    gedit
+    screen
+    bind
+  ] ++ dockerCliPackages;
   
   
 }

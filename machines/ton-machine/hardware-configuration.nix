@@ -71,6 +71,15 @@ in
       "rw" "nosuid" "nodev" "nofail" "x-systemd.device-timeout=30s"
     ];
   };
+  # Keep the shared-home Podman path working while storing data on Oracle's root.
+  fileSystems."/var/lib/containers/ton" = {
+    device = "/mnt/oracle/var/lib/containers/ton";
+    fsType = "none";
+    options = [
+      "bind" "suid" "dev"
+      "x-systemd.requires-mounts-for=/mnt/oracle/var/lib/containers/ton"
+    ];
+  };
   swapDevices = [
     { device = "/dev/disk/by-uuid/62d909e5-d427-4cf4-a650-e18d07d0a019"; }
   ];
@@ -79,6 +88,13 @@ in
     kernelChannel = "stable";
     enableIGPU = true;
     firmware.enable = false;
+    touchId = {
+      enable = true;
+      bindUser = "ton";
+      macosUid = 501;
+      enableManualUnlock = true;
+      src = /mnt/src/KaiT2en-Fedora;
+    };
   };
   hardware.apple.touchBar.enable = true;
   hardware.cpu.intel.updateMicrocode = true;

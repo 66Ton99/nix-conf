@@ -1,12 +1,16 @@
 { config, lib, pkgs, utils, ... }:
 let
   # Vendor binaries and private agent state stay outside the public Nix store.
+  oracleJdk17 = "/mnt/oracle/usr/lib/jvm/jdk-17.0.20.1-oracle-x64";
   coreLibraries = with pkgs; [
     glibc stdenv.cc.cc.lib zlib openssl libcap elfutils libxcrypt systemd
   ];
   ciscoLibraries = coreLibraries ++ (with pkgs; [
     gtk3 glib atk pango cairo gdk-pixbuf libxml2_13
     libx11 libxext libxtst libxrender
+  ]);
+  sqldeveloperLibraries = ciscoLibraries ++ (with pkgs; [
+    libxi libxrandr libxinerama libxcursor libxfixes alsa-lib fontconfig freetype
   ]);
   makeRuntime = libraries: vendorDirectories: {
     NIX_LD = pkgs.stdenv.cc.bintools.dynamicLinker;
@@ -18,8 +22,11 @@ let
   mydesktopEnvironment = makeRuntime coreLibraries [ ];
   ciscoEnvironment = makeRuntime ciscoLibraries [ "/opt/cisco/secureclient/lib" ];
   falconEnvironment = makeRuntime coreLibraries [ "/opt/CrowdStrike" ];
+  sqldeveloperEnvironment = (makeRuntime sqldeveloperLibraries [ ]) // {
+    OIDE_JAVA_HOME = toString oracleJdk17;
+  };
   nativeTools = with pkgs; [
-    bash coreutils findutils gnugrep gnused gawk procps iproute2
+    bash coreutils findutils gnugrep gnused gawk file procps iproute2
     util-linux pciutils usbutils dmidecode curl wget systemd kmod xdg-utils
     nettools iptables bind
   ];
@@ -41,6 +48,9 @@ let
     export NIX_LD_LIBRARY_PATH=${lib.escapeShellArg runtime.NIX_LD_LIBRARY_PATH}
     export SSL_CERT_FILE=${lib.escapeShellArg runtime.SSL_CERT_FILE}
     export SSL_CERT_DIR=${lib.escapeShellArg runtime.SSL_CERT_DIR}
+    ${lib.optionalString (runtime ? OIDE_JAVA_HOME) ''
+      export OIDE_JAVA_HOME=${lib.escapeShellArg runtime.OIDE_JAVA_HOME}
+    ''}
     exec ${lib.escapeShellArg executable} "$@"
   '';
   ciscoGui = vendorCommand "cisco-secure-client" "/opt/cisco/secureclient/bin/vpnui" ciscoEnvironment;
@@ -49,6 +59,7 @@ let
   falconCtl = vendorCommand "falconctl" "/opt/CrowdStrike/falconctl" falconEnvironment;
   falconDaemon = vendorCommand "falcon-daemon" "/opt/CrowdStrike/falcond" falconEnvironment;
   mydesktopService = vendorCommand "mydesktop-service" "/opt/oracle/mydesktop/mydesktopservice" mydesktopEnvironment;
+  sqldeveloper = vendorCommand "sqldeveloper" "/opt/sqldeveloper/sqldeveloper.sh" sqldeveloperEnvironment;
 
 in
 {
@@ -65,7 +76,7 @@ in
   ];
 
   environment.systemPackages = [
-    ciscoGui ciscoCli falconCtl mydesktopService
+    ciscoGui ciscoCli falconCtl mydesktopService sqldeveloper
     pkgs.xdg-utils
     (pkgs.makeDesktopItem {
       name = "cisco-secure-client";
@@ -74,6 +85,15 @@ in
       exec = "cisco-secure-client";
       icon = "network-vpn";
       categories = [ "Network" ];
+      terminal = false;
+    })
+    (pkgs.makeDesktopItem {
+      name = "sqldeveloper";
+      desktopName = "SQL Developer";
+      comment = "Oracle SQL Developer";
+      exec = "sqldeveloper";
+      icon = "/opt/sqldeveloper/icon.png";
+      categories = [ "Development" "IDE" ];
       terminal = false;
     })
   ];
