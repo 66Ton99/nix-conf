@@ -56,12 +56,12 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "codex-desktop";
-  version = "26.1103.60933";
+  version = "26.1111.71025";
 
   # The official Linux desktop app now ships as ChatGPT, including Codex.
   src = fetchurl {
     url = "https://persistent.oaistatic.com/codex-app-prod/linux/deb/pool/main/c/chatgpt/chatgpt_${version}_amd64.deb";
-    hash = "sha256-B0bpuldRgvXb4yYXuCpkXrk61XyliOWpNYaVprZa7nE=";
+    hash = "sha256-gZdCTLzqOnwNRFpUTqprmd+Ljvix0YLit0P3AnU8enA=";
   };
 
   nativeBuildInputs = [ dpkg autoPatchelfHook wrapGAppsHook3 makeWrapper asar ];

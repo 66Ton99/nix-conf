@@ -15,6 +15,9 @@ in
   i18n.supportedLocales = [ "en_US.UTF-8/UTF-8" "uk_UA.UTF-8/UTF-8" ];
   console.keyMap = "us";
 
+  # Allow JetBrains IDEs to watch large projects without recursive scans.
+  boot.kernel.sysctl."fs.inotify.max_user_watches" = 1048576;
+
   boot.loader = {
     efi = {
       efiSysMountPoint = "/boot/efi";
