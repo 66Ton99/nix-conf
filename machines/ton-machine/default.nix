@@ -10,6 +10,7 @@
     ./jetbrains-toolbox.nix
     ./shared-certificates.nix
     ./shared-opt.nix
+    ./guake.nix
     ./desktop-repair.nix
     ./user-settings.nix
     ./keyboard.nix

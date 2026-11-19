@@ -37,11 +37,18 @@ let
   rawConfig = (pkgs.formats.yaml { }).generate "macos-keyboard.yaml" {
     keymap = [
       {
-        name = "Guake handles Command copy and paste natively";
+        name = "Guake handles Command shortcuts natively";
         application.only = [ guake ];
         exact_match = true;
-        # First matching rule wins; leave these for Guake's GTK accelerators.
-        remap = { Super-c = "Super-c"; Super-v = "Super-v"; };
+        # Route arrows to Guake's tab accelerators because Mutter grabs
+        # Super+Left/Right globally for window tiling.
+        remap = {
+          Super-c = "Super-c";
+          Super-v = "Super-v";
+          Super-Left = "Ctrl-PageUp";
+          Super-Right = "Ctrl-PageDown";
+          Super-k = "Ctrl-Shift-F12";
+        };
       }
       {
         name = "macOS terminal shortcuts; physical Control stays Control";
@@ -149,6 +156,7 @@ let
       switch-group-backward = [ "<Shift><Super>Above_Tab" ];
       minimize = [ "<Super>m" "<Super>h" ];
     };
+    "org/gnome/desktop/wm/preferences".mouse-button-modifier = "<Alt>";
     "org/gnome/shell/keybindings" = {
       toggle-overview = [ "<Super>space" ];
       toggle-message-tray = emptyShortcuts;
@@ -157,6 +165,9 @@ let
     "org/guake/keybindings/local" = {
       clipboard-copy = "<Super>c";
       clipboard-paste = "<Super>v";
+      previous-tab = "<Control>Page_Up";
+      next-tab = "<Control>Page_Down";
+      reset-terminal = "<Control><Shift>F12";
     };
     "org/gnome/settings-daemon/plugins/media-keys" = {
       screensaver = [ "<Control><Super>q" "XF86PowerOff" ];

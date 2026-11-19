@@ -86,7 +86,11 @@ roles; Command is the existing Super key on the Apple keyboard.
 | Command+backtick | Next window of the same application |
 | Command+C/V/X/A/Z, Shift+Command+Z | Copy, paste, cut, select all, undo, redo |
 | Command+T/W/N/Q/S/F/L | Tabs, windows, quit, save, find, location (where supported) |
-| Command+Left/Right; Shift to select | Start / end of line |
+| Command+Left/Right (Guake) | Previous / next tab |
+| Command+K (Guake) | Reset terminal and clear its scrollback |
+| Command+left-click (Guake) | Open the link under the pointer |
+| Option/Alt+click-drag | Move GNOME windows |
+| Command+Left/Right (other terminals) | Start / end of line |
 | Command+Up/Down; Shift to select | Start / end of document |
 | Option+Left/Right; Shift to select | Move by word |
 | Option+Backspace/Delete | Delete previous / next word |
@@ -142,16 +146,21 @@ without an input device. The patched kernel disables `ACPI_TINY_POWER_BUTTON`
 and restores fixed-event input through the regular `button` driver. Kernel
 changes require rebooting into the newly built generation.
 
-Guake binds Command+C/V natively through its declared GTK accelerators, so
-clipboard shortcuts also work before xremap starts. xremap recognizes its
-Nix-wrapped window class (`.guake-wrapped`) and passes these two shortcuts
-through unchanged. Other terminals map Command+C/V to Ctrl+Shift+C/V.
-Command+T/W uses Ctrl+Shift+T/W, and physical Ctrl+C still interrupts commands.
-Command+Left/Right and Command+Backspace use shell editing shortcuts; Option
-arrows move by word. Other application shortcuts depend on the application's
-Linux defaults. The mappings do not emulate all macOS application behavior or
-the Option special-character layer. The existing Ukrainian Mac punctuation
-and corrected letter positions remain in `xkb/ua_mac`.
+Guake handles Command+C/V natively. xremap recognizes its Nix-wrapped window
+class (`.guake-wrapped`); GNOME reserves Command+Left/Right for window tiling,
+so xremap translates those keys inside Guake to its previous/next-tab
+accelerators. It routes Command+K to Guake's reset accelerator, which clears
+the terminal and its scrollback but does not erase Zsh's saved command history.
+GNOME's window-drag modifier is Option/Alt, freeing Command+left-click for
+Guake. The Guake package accepts Super+left-click for URL matching, and its
+quick-open feature is enabled. Other terminals map Command+C/V to
+Ctrl+Shift+C/V. Command+T/W uses Ctrl+Shift+T/W, and physical Ctrl+C still
+interrupts commands. In other terminals, Command+Left/Right and
+Command+Backspace use shell editing shortcuts; Option arrows move by word.
+Other application shortcuts depend on the application's Linux defaults. The
+mappings do not emulate all macOS application behavior or the Option
+special-character layer. The existing Ukrainian Mac punctuation and corrected
+letter positions remain in `xkb/ua_mac`.
 
 The setup uses the existing unstable pin for the standard xremap package (with
 `--desktop=gnome` and `--validate-config`) and the host pin for the GNOME extension,
