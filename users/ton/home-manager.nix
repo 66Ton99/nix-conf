@@ -201,6 +201,10 @@ in {
         condition = "hasconfig:remote.*.url:https://orahub.oci.oraclecorp.com/**";
         path = "${config.xdg.configHome}/git/config-orahub";
       }
+      {
+        condition = "gitdir:/mnt/src/OFS/";
+        path = "${config.xdg.configHome}/git/config-orahub";
+      }
     ];
     settings = {
       user.name = "Ton Sharp";
