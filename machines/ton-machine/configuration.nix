@@ -202,6 +202,8 @@ in
     "d /home/ton/.config/nixos/zsh 0700 ton ton -"
     "d /home/ton/.cache/nixos 0700 ton ton -"
     "d /home/ton/.local/share/nixos 0700 ton ton -"
+    # Keep the existing encrypted keyrings available under this host's XDG_DATA_HOME.
+    "L+ /home/ton/.local/share/nixos/keyrings - ton ton - /home/ton/.local/share/keyrings"
     "d /home/ton/.local/state/nixos 0700 ton ton -"
     "d /home/ton/.local/state/nixos/zsh 0700 ton ton -"
   ];

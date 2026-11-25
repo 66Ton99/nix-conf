@@ -70,6 +70,8 @@ let
     comment = "The IDE for Java and Kotlin development";
     exec = "${intellijIdea}/bin/intellij-idea %u";
     icon = "intellij-idea";
+    # Match the Toolbox IDE window to the pinned launcher in GNOME Shell.
+    startupWMClass = "jetbrains-idea";
     categories = [ "Development" "IDE" ];
     terminal = false;
   };

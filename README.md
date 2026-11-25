@@ -28,7 +28,8 @@ Antigravity IDE (`antigravity-ide`), and Antigravity CLI (`agy`)
 on every configured host, including WSL and
 both Intel and Apple Silicon Macs. Antigravity CLI replaces Gemini CLI.
 The CLI and Intel Mac GUI builds use pinned official Google releases; the other
-GUI builds follow the existing unstable lock. Run `make switch` on each
+GUI builds use pinned official Google releases whenever the unstable lock lags
+behind them, and otherwise follow the unstable lock. Run `make switch` on each
 machine to apply the shared configuration.
 
 ## Install Nix

@@ -1,7 +1,7 @@
 { lib, stdenvNoCC, fetchurl, autoPatchelfHook, versionCheckHook }:
 let
   # Official release manifest, including the Intel Mac build missing in nixpkgs:
-  # https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.1/manifest.json
+  # https://storage.googleapis.com/antigravity-public/antigravity-cli/1.5.15/manifest.json
   release = lib.importJSON ./antigravity-cli-sources.json;
   source = release.sources.${stdenvNoCC.hostPlatform.system};
 in
