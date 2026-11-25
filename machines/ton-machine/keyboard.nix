@@ -24,6 +24,8 @@ let
     guake
     "/(?i)^(org\\.gnome\\.(Console|Terminal)|gnome-terminal(-server)?|kgx|kitty|Alacritty|com\\.mitchellh\\.ghostty|ghostty|konsole|org\\.kde\\.konsole|wezterm|org\\.wezfurlong\\.wezterm|foot|xterm)(\\..*)?$/"
   ];
+  # IDEA's custom macOS-like keymap uses Super/Meta directly, not translated Ctrl.
+  ideaApplications = [ "/(?i)^jetbrains-idea$/" ];
   # Declare Shift variants explicitly so Ctrl+Command and Option+Command
   # combinations keep their own meaning (in particular Ctrl+Command+Q).
   withShift = bindings: bindings // lib.mapAttrs'
@@ -80,14 +82,14 @@ let
       }
       {
         name = "macOS application shortcuts";
-        application.not = terminals;
+        application.not = terminals ++ ideaApplications;
         exact_match = true;
         remap = withShift (lib.listToAttrs (map
           (key: lib.nameValuePair "Super-${key}" "Ctrl-${key}") commandKeys));
       }
       {
         name = "macOS text navigation and deletion";
-        application.not = terminals;
+        application.not = terminals ++ ideaApplications;
         exact_match = true;
         remap = withShift {
           Super-Left = "Home";

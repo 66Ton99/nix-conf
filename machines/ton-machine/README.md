@@ -162,6 +162,14 @@ mappings do not emulate all macOS application behavior or the Option
 special-character layer. The existing Ukrainian Mac punctuation and corrected
 letter positions remain in `xkb/ua_mac`.
 
+IntelliJ IDEA uses the custom `macOS — Complete` keymap, based on its `Default
+for GNOME` keymap (shown as `GNOME` in the menu) because the macOS preset is not
+offered in the Linux keymap list. Its profile restores macOS Command bindings,
+and xremap passes Command through to IDEA.
+The selected map and shortcut profile are managed from `intellij-idea/` for the
+existing IntelliJ IDEA 2026.2 and 2026.3 config directories. Add the new config
+path when Toolbox moves to another IDEA config version.
+
 The setup uses the existing unstable pin for the standard xremap package (with
 `--desktop=gnome` and `--validate-config`) and the host pin for the GNOME extension,
 following the [upstream user service](https://github.com/xremap/nix-flake/blob/master/modules/user-service.nix).

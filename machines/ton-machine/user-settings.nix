@@ -73,6 +73,14 @@ in {
         static_dir = "/home/ton/.local/share/containers/storage/libpod"
         volume_path = "/home/ton/.local/share/containers/storage/volumes"
       '';
+      configFile."JetBrains/IntelliJIdea2026.2/keymaps/macOS-Complete.xml".source =
+        ./intellij-idea/macOS-Complete.xml;
+      configFile."JetBrains/IntelliJIdea2026.2/options/linux/keymap.xml".source =
+        ./intellij-idea/keymap-selection.xml;
+      configFile."JetBrains/IntelliJIdea2026.3/keymaps/macOS-Complete.xml".source =
+        ./intellij-idea/macOS-Complete.xml;
+      configFile."JetBrains/IntelliJIdea2026.3/options/linux/keymap.xml".source =
+        ./intellij-idea/keymap-selection.xml;
       configFile."mimeapps.list".source = ./dotfiles/mimeapps.list;
       configFile."gtk-3.0/bookmarks".source = ./dotfiles/gtk-bookmarks;
     };
